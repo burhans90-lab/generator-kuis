@@ -1,0 +1,1636 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Generator Perangkat Ajar — Pembelajaran Mendalam</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Lora:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.1/marked.min.js"></script>
+<style>
+:root{
+  --violet-50:#faf8ff; --violet-100:#f2edff; --violet-200:#e4d9ff; --violet-300:#cdb8ff;
+  --violet-400:#a985ff; --violet-500:#8b5cf6; --violet-600:#7440e8; --violet-700:#5f2fc7;
+  --violet-800:#4b2599; --violet-900:#2e1863;
+  --indigo-500:#6366f1; --ink:#211a35; --ink-soft:#5b5477; --line:#ece7fb;
+  --bg:#fbfaff; --card:#ffffff; --shadow: 0 1px 2px rgba(46,24,99,.04), 0 8px 24px -8px rgba(88,44,199,.14);
+  --shadow-lg: 0 20px 45px -18px rgba(76,32,180,.28);
+  --radius:1.25rem;
+  --joy:#f0b429; --meaning:#22b8a0; --mindful:#7c5cff;
+  --ok:#1c9d6e; --ok-bg:#e8f8f1; --warn:#b8790a; --warn-bg:#fef6e6; --err:#b3123a; --err-bg:#fdecef;
+}
+[data-theme="dark"]{
+  --violet-50:#241a3d; --violet-100:#2c2049; --violet-200:#3a2c60; --violet-300:#4c3a7c;
+  --ink:#f1edff; --ink-soft:#b8aede; --line:#3a2f58;
+  --bg:#150f26; --card:#1d1636; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 30px -8px rgba(0,0,0,.5);
+  --shadow-lg: 0 20px 50px -18px rgba(0,0,0,.6);
+  --ok-bg:#0f2c22; --warn-bg:#3a2a0c; --err-bg:#3a1420;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  font-family:'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+  background:
+    radial-gradient(1200px 600px at 90% -10%, var(--violet-100), transparent 60%),
+    radial-gradient(900px 500px at -10% 10%, var(--violet-50), transparent 55%),
+    var(--bg);
+  color:var(--ink);
+  min-height:100vh;
+  transition:background .3s ease, color .3s ease;
+}
+.serif{ font-family:'Lora', serif; }
+h1,h2,h3{ margin:0; }
+button{ font-family:inherit; cursor:pointer; }
+input,textarea,select{ font-family:inherit; }
+::selection{ background:var(--violet-300); }
+.wrap{ max-width:1180px; margin:0 auto; padding:0 20px 80px; }
+.header{
+  position:sticky; top:0; z-index:40; backdrop-filter:blur(10px);
+  background:color-mix(in srgb, var(--bg) 78%, transparent);
+  border-bottom:1px solid var(--line);
+}
+.header-inner{ max-width:1180px; margin:0 auto; padding:16px 20px; display:flex; align-items:center; justify-content:space-between; gap:16px; }
+.brand{ display:flex; align-items:center; gap:12px; }
+.brand-mark{
+  width:42px; height:42px; border-radius:12px; flex:none;
+  background:linear-gradient(135deg, var(--violet-500), var(--indigo-500));
+  display:flex; align-items:center; justify-content:center; color:white; font-weight:800; font-size:18px;
+  box-shadow:var(--shadow);
+}
+.brand-title{ font-weight:800; font-size:15px; line-height:1.25; letter-spacing:-.01em; }
+.brand-sub{ font-size:11.5px; color:var(--ink-soft); font-weight:600; letter-spacing:.02em; }
+.header-actions{ display:flex; align-items:center; gap:8px; }
+.icon-btn{
+  width:40px; height:40px; border-radius:12px; border:1px solid var(--line); background:var(--card);
+  display:flex; align-items:center; justify-content:center; color:var(--ink-soft); transition:.15s;
+  position:relative;
+}
+.icon-btn:hover{ color:var(--violet-600); border-color:var(--violet-300); transform:translateY(-1px); box-shadow:var(--shadow); }
+.badge-dot{ position:absolute; top:-4px; right:-4px; width:9px; height:9px; border-radius:50%; background:var(--joy); border:2px solid var(--bg); }
+
+.progress-nav{ display:flex; gap:6px; padding:10px 0 0; max-width:1180px; margin:0 auto; }
+.progress-nav-item{ flex:1; height:4px; border-radius:99px; background:var(--line); overflow:hidden; }
+.progress-nav-item i{ display:block; height:100%; width:0%; background:linear-gradient(120deg,var(--violet-500),var(--indigo-500)); transition:width .3s ease; }
+
+.hero{ padding:56px 0 28px; text-align:center; }
+.eyebrow{
+  display:inline-flex; align-items:center; gap:8px; padding:6px 14px; border-radius:999px;
+  background:var(--violet-100); color:var(--violet-700); font-size:12.5px; font-weight:700; letter-spacing:.03em; margin-bottom:18px;
+}
+[data-theme="dark"] .eyebrow{ color:var(--violet-300); }
+.hero h1{ font-size:clamp(28px,4.2vw,42px); font-weight:800; letter-spacing:-.02em; line-height:1.12; }
+.hero h1 span{ background:linear-gradient(120deg,var(--violet-600),var(--indigo-500)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+.hero p{ max-width:640px; margin:14px auto 0; color:var(--ink-soft); font-size:15.5px; line-height:1.6; }
+.principles-row{ display:flex; gap:10px; justify-content:center; margin-top:24px; flex-wrap:wrap; }
+.pill{ display:flex; align-items:center; gap:7px; padding:7px 14px; border-radius:999px; border:1px solid var(--line); background:var(--card); font-size:12.5px; font-weight:700; box-shadow:var(--shadow); }
+.pill i{ width:8px; height:8px; border-radius:50%; }
+
+.autosave-bar{ display:flex; align-items:center; justify-content:flex-end; gap:10px; margin:-6px 2px 14px; font-size:11.5px; color:var(--ink-soft); flex-wrap:wrap; }
+.autosave-bar .dot{ width:7px; height:7px; border-radius:50%; background:var(--ok); flex:none; }
+.autosave-bar button{ background:none; border:none; color:var(--violet-600); font-weight:700; font-size:11.5px; text-decoration:underline; padding:0; }
+
+.card{ background:var(--card); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); }
+.section-card{ padding:28px; margin-bottom:22px; position:relative; }
+.section-head{ display:flex; align-items:flex-start; gap:14px; margin-bottom:22px; }
+.section-num{
+  width:36px; height:36px; border-radius:10px; background:linear-gradient(135deg,var(--violet-500),var(--indigo-500));
+  color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:14px; flex:none;
+}
+.section-title-row{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.section-title{ font-size:17px; font-weight:800; letter-spacing:-.01em; }
+.section-desc{ font-size:13px; color:var(--ink-soft); margin-top:2px; }
+.section-status{ margin-left:auto; font-size:11px; font-weight:800; padding:4px 10px; border-radius:999px; white-space:nowrap; }
+.section-status.ok{ background:var(--ok-bg); color:var(--ok); }
+.section-status.warn{ background:var(--warn-bg); color:var(--warn); }
+
+.grid2{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.alokasi-grid{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
+@media (max-width:640px){ .alokasi-grid{ grid-template-columns:1fr; } }
+@media (max-width:720px){ .grid2{ grid-template-columns:1fr; } }
+.field{ display:flex; flex-direction:column; gap:6px; }
+.field.full{ grid-column:1/-1; }
+label{ font-size:12.5px; font-weight:700; color:var(--ink); display:flex; align-items:center; gap:6px; }
+label .opt{ font-weight:500; color:var(--ink-soft); font-size:11px; }
+label .req{ color:#e2436b; }
+label .charcount{ margin-left:auto; font-weight:500; color:var(--ink-soft); font-size:10.5px; }
+.input, textarea, select{
+  border:1.5px solid var(--line); background:var(--bg); border-radius:11px; padding:10px 13px; font-size:13.5px; color:var(--ink);
+  outline:none; transition:.15s; width:100%;
+}
+.input:focus, textarea:focus, select:focus{ border-color:var(--violet-400); box-shadow:0 0 0 4px var(--violet-100); }
+textarea{ resize:vertical; min-height:80px; line-height:1.5; }
+.hint{ font-size:11.5px; color:var(--ink-soft); }
+.field-error-text{ font-size:11.5px; color:var(--err); font-weight:700; }
+.field.invalid .input, .field.invalid textarea, .field.invalid select{ border-color:var(--err); background:var(--err-bg); }
+.pw-wrap{ position:relative; }
+.pw-wrap .input{ padding-right:40px; }
+.pw-toggle{ position:absolute; right:8px; top:50%; transform:translateY(-50%); background:none; border:none; color:var(--ink-soft); padding:4px; }
+
+.check-grid{ display:grid; gap:8px; }
+.check-grid.c2{ grid-template-columns:1fr 1fr; }
+.check-grid.c3{ grid-template-columns:1fr 1fr 1fr; }
+@media (max-width:640px){ .check-grid.c2, .check-grid.c3{ grid-template-columns:1fr 1fr; } }
+.chk{
+  display:flex; align-items:center; gap:8px; padding:9px 11px; border-radius:10px; border:1.5px solid var(--line);
+  background:var(--bg); font-size:12.5px; font-weight:600; cursor:pointer; transition:.15s; user-select:none;
+}
+.chk:hover{ border-color:var(--violet-300); }
+.chk.active{ border-color:var(--violet-500); background:var(--violet-100); color:var(--violet-700); }
+[data-theme="dark"] .chk.active{ color:var(--violet-200); }
+.chk input{ accent-color:var(--violet-600); width:15px; height:15px; flex:none; }
+
+.output-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:14px; }
+.output-card{
+  border:1.75px solid var(--line); border-radius:16px; padding:18px 16px; cursor:pointer; transition:.18s;
+  background:var(--bg); display:flex; flex-direction:column; gap:10px; position:relative;
+}
+.output-card:hover{ transform:translateY(-2px); box-shadow:var(--shadow); }
+.output-card.active{ border-color:var(--violet-500); background:linear-gradient(160deg,var(--violet-100),var(--card)); box-shadow:var(--shadow); }
+.output-icon{
+  width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px;
+  background:var(--violet-100); color:var(--violet-700);
+}
+.output-card.active .output-icon{ background:linear-gradient(135deg,var(--violet-500),var(--indigo-500)); color:#fff; }
+.output-name{ font-weight:800; font-size:13.5px; }
+.output-desc{ font-size:11.5px; color:var(--ink-soft); line-height:1.4; }
+.output-check{ position:absolute; top:14px; right:14px; width:19px; height:19px; border-radius:6px; border:1.75px solid var(--line); background:var(--card); display:flex; align-items:center; justify-content:center; font-size:11px; color:transparent; }
+.output-card.active .output-check{ background:var(--violet-600); border-color:var(--violet-600); color:#fff; }
+.output-count-pill{ font-size:11px; font-weight:800; padding:4px 10px; border-radius:999px; background:var(--violet-100); color:var(--violet-700); margin-left:auto; white-space:nowrap; }
+
+.upload-zone{ border:1.75px dashed var(--line); border-radius:14px; padding:22px; text-align:center; background:var(--bg); transition:.15s; position:relative; cursor:pointer; }
+.upload-zone.drag{ border-color:var(--violet-400); background:var(--violet-100); }
+.upload-zone.reading{ opacity:.7; }
+.upload-zone input[type=file]{ display:none; }
+.file-chip{ display:inline-flex; align-items:center; gap:8px; padding:6px 12px; border-radius:999px; background:var(--violet-100); color:var(--violet-700); font-size:12px; font-weight:700; margin-top:10px; }
+.file-chip button{ background:none; border:none; color:inherit; font-weight:800; }
+.file-meta{ font-size:11px; color:var(--ink-soft); margin-top:6px; }
+.file-progress-track{ height:5px; border-radius:99px; background:var(--line); margin-top:10px; overflow:hidden; }
+.file-progress-fill{ height:100%; background:linear-gradient(120deg,var(--violet-500),var(--indigo-500)); transition:width .2s; }
+
+.gen-row{ display:flex; gap:10px; flex-wrap:wrap; }
+.gen-btn{
+  flex:1; min-width:220px; padding:17px; border:none; border-radius:16px; font-weight:800; font-size:15.5px; color:#fff;
+  background:linear-gradient(120deg,var(--violet-600),var(--indigo-500)); box-shadow:0 14px 30px -10px rgba(116,64,232,.55);
+  display:flex; align-items:center; justify-content:center; gap:10px; transition:.15s;
+}
+.gen-btn:hover:not(:disabled){ transform:translateY(-2px); box-shadow:0 18px 36px -10px rgba(116,64,232,.65); }
+.gen-btn:disabled{ opacity:.5; cursor:not-allowed; box-shadow:none; }
+.gen-btn.loading{ opacity:.85; }
+.preview-btn{
+  padding:17px 20px; border-radius:16px; font-weight:800; font-size:13.5px; border:1.5px solid var(--line); background:var(--card); color:var(--ink);
+  display:flex; align-items:center; justify-content:center; gap:8px; transition:.15s;
+}
+.preview-btn:hover:not(:disabled){ border-color:var(--violet-300); color:var(--violet-700); }
+.preview-btn:disabled{ opacity: .6; cursor: not-allowed; }
+
+.error-box{ display:flex; gap:8px; align-items:flex-start; padding:12px 14px; border-radius:12px; background:var(--err-bg); color:var(--err); font-size:12.5px; font-weight:600; margin-bottom:16px; border:1px solid #f7c9d4; }
+[data-theme="dark"] .error-box{ border-color:#5c1c30; }
+.warn-box{ display:flex; gap:8px; align-items:flex-start; padding:12px 14px; border-radius:12px; background:var(--warn-bg); color:var(--warn); font-size:12.5px; font-weight:600; margin-bottom:16px; border:1px solid #f2dca3; }
+[data-theme="dark"] .warn-box{ border-color:#5c4a1c; }
+.error-box ul, .warn-box ul{ margin:0; padding-left:16px; }
+
+.modal-backdrop{ position:fixed; inset:0; background:rgba(20,12,42,.5); backdrop-filter:blur(3px); display:flex; align-items:center; justify-content:center; z-index:100; padding:16px; }
+.modal{ background:var(--card); border-radius:20px; padding:28px; max-width:440px; width:100%; box-shadow:var(--shadow-lg); border:1px solid var(--line); max-height:86vh; overflow-y:auto; }
+.modal.wide{ max-width:720px; }
+.modal h3{ font-size:17px; font-weight:800; margin-bottom:4px; }
+.modal-close{ float:right; background:none; border:none; color:var(--ink-soft); font-size:20px; line-height:1; }
+.modal-actions{ display:flex; gap:10px; margin-top:20px; }
+.btn{ padding:10px 18px; border-radius:11px; font-weight:700; font-size:13px; border:1.5px solid var(--line); background:var(--bg); color:var(--ink); transition:.15s; }
+.btn:hover:not(:disabled){ border-color:var(--violet-300); }
+.btn:disabled{ opacity:0.6; cursor:not-allowed; }
+.btn.primary{ background:linear-gradient(120deg,var(--violet-600),var(--indigo-500)); color:#fff; border:none; flex:1; }
+.btn.primary:hover:not(:disabled){ opacity:.92; }
+.btn.ghost{ flex:1; }
+.btn.sm{ padding:7px 12px; font-size:11.5px; }
+
+.prompt-tabs{ display:flex; gap:8px; margin:14px 0 10px; }
+.prompt-tabs button{ flex:1; padding:8px 10px; border-radius:10px; border:1.5px solid var(--line); background:var(--bg); font-weight:700; font-size:12px; color:var(--ink-soft); }
+.prompt-tabs button.active{ background:var(--violet-100); border-color:var(--violet-400); color:var(--violet-700); }
+.prompt-pre{ background:var(--bg); border:1.5px solid var(--line); border-radius:12px; padding:14px; font-size:11.5px; line-height:1.6; white-space:pre-wrap; word-break:break-word; max-height:420px; overflow-y:auto; font-family:'SFMono-Regular',Consolas,monospace; }
+
+.hist-item{ padding:12px 14px; border-radius:12px; border:1px solid var(--line); margin-bottom:8px; cursor:pointer; transition:.15s; display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.hist-item:hover{ border-color:var(--violet-300); background:var(--violet-50); }
+.hist-title{ font-weight:700; font-size:13px; }
+.hist-time{ font-size:11px; color:var(--ink-soft); margin-top:2px; }
+.hist-empty{ text-align:center; padding:30px 10px; color:var(--ink-soft); font-size:13px; }
+.hist-del{ background:none; border:none; color:var(--ink-soft); font-size:14px; flex:none; }
+.hist-del:hover{ color:var(--err); }
+
+.results-wrap{ margin-top:10px; }
+.results-badges{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; align-items:center; }
+.results-badges .spacer{ flex:1; }
+.tabs{ display:flex; gap:6px; overflow-x:auto; padding-bottom:2px; margin-bottom:0; }
+.tab{
+  padding:11px 18px; border-radius:12px 12px 0 0; font-weight:700; font-size:13px; border:1.5px solid var(--line); border-bottom:none;
+  background:var(--bg); color:var(--ink-soft); white-space:nowrap; transition:.15s; display:flex; align-items:center; gap:6px;
+}
+.tab.active{ background:var(--card); color:var(--violet-700); border-color:var(--violet-300); }
+[data-theme="dark"] .tab.active{ color:var(--violet-200); }
+.tab-warn-dot{ width:7px; height:7px; border-radius:50%; background:var(--warn); flex:none; }
+.tab-panel{ border:1.5px solid var(--violet-300); border-radius:0 16px 16px 16px; background:var(--card); padding:26px; box-shadow:var(--shadow); }
+.tab-toolbar{ display:flex; gap:8px; justify-content:flex-end; margin-bottom:18px; flex-wrap:wrap; }
+.tool-btn{ display:flex; align-items:center; gap:6px; padding:8px 13px; border-radius:10px; border:1.5px solid var(--line); background:var(--bg); font-size:12px; font-weight:700; color:var(--ink); }
+.tool-btn:hover{ border-color:var(--violet-300); color:var(--violet-700); }
+.tool-btn:disabled{ opacity:.55; cursor:not-allowed; }
+.parse-warn-note{ display:flex; gap:8px; align-items:flex-start; padding:10px 12px; border-radius:10px; background:var(--warn-bg); color:var(--warn); font-size:11.5px; font-weight:600; margin-bottom:14px; }
+.doc-content{ font-size:14px; line-height:1.75; color:var(--ink); }
+.doc-content h1, .doc-content h2, .doc-content h3{ font-family:'Lora',serif; margin-top:1.4em; margin-bottom:.5em; color:var(--ink); }
+.doc-content h1{ font-size:1.5em; } .doc-content h2{ font-size:1.25em; } .doc-content h3{ font-size:1.08em; }
+.doc-content ul, .doc-content ol{ padding-left:1.4em; }
+.doc-content table{ border-collapse:collapse; width:100%; margin:1em 0; font-size:.92em; }
+.doc-content th, .doc-content td{ border:1px solid var(--line); padding:8px 10px; text-align:left; }
+.doc-content th{ background:var(--violet-100); }
+.doc-content code{ background:var(--violet-100); padding:1px 6px; border-radius:5px; font-size:.9em; }
+.doc-content blockquote{ border-left:3px solid var(--violet-400); padding-left:14px; color:var(--ink-soft); margin:1em 0; }
+.doc-content strong{ color:var(--ink); }
+
+.skeleton-wrap{ padding:22px 4px 4px; }
+.progress-steps-list{ display:flex; flex-direction:column; gap:6px; margin-bottom:16px; }
+.progress-step-row{ display:flex; align-items:center; gap:10px; font-size:12px; color:var(--ink-soft); }
+.progress-step-row .dot{ width:16px; height:16px; border-radius:50%; border:2px solid var(--line); flex:none; display:flex; align-items:center; justify-content:center; font-size:9px; }
+.progress-step-row.done .dot{ background:var(--ok); border-color:var(--ok); color:#fff; }
+.progress-step-row.active .dot{ border-color:var(--violet-500); }
+.progress-step-row.active{ color:var(--violet-700); font-weight:700; }
+[data-theme="dark"] .progress-step-row.active{ color:var(--violet-300); }
+.progress-step-row.done{ color:var(--ink); }
+.progress-bar-outer{ height:8px; border-radius:99px; background:var(--violet-100); overflow:hidden; margin-bottom:14px; }
+.progress-bar-inner{ height:100%; border-radius:99px; background:linear-gradient(120deg,var(--violet-500),var(--indigo-500)); transition:width .5s ease; }
+.sk-line{ height:12px; border-radius:6px; background:linear-gradient(90deg,var(--line),var(--violet-100),var(--line)); background-size:200% 100%; animation:shine 1.4s ease-in-out infinite; margin-bottom:12px; }
+@keyframes shine{ 0%{background-position:200% 0;} 100%{background-position:-200% 0;} }
+.progress-text{ text-align:center; font-weight:700; color:var(--violet-600); font-size:13.5px; margin:4px 0 14px; display:flex; align-items:center; justify-content:center; gap:10px; }
+.progress-elapsed{ text-align:center; font-size:11px; color:var(--ink-soft); margin-bottom:10px; }
+.spinner{ width:16px; height:16px; border-radius:50%; border:2.5px solid var(--violet-200); border-top-color:var(--violet-600); animation:spin .7s linear infinite; flex:none; }
+@keyframes spin{ to{ transform:rotate(360deg); } }
+
+.footer-note{ text-align:center; font-size:12px; color:var(--ink-soft); margin-top:50px; }
+.toast{ position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:var(--ink); color:var(--bg); padding:11px 20px; border-radius:12px; font-size:13px; font-weight:700; z-index:200; box-shadow:var(--shadow-lg); max-width:90vw; text-align:center; }
+.switch{ width:40px; height:22px; border-radius:999px; background:var(--line); position:relative; border:none; flex:none; transition:.2s; }
+.switch.on{ background:linear-gradient(120deg,var(--violet-600),var(--indigo-500)); }
+.switch span{ position:absolute; top:2px; left:2px; width:18px; height:18px; border-radius:50%; background:#fff; transition:.2s; box-shadow:0 1px 3px rgba(0,0,0,.3); }
+.switch.on span{ transform:translateX(18px); }
+.mini-row{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 0; }
+.link{ color:var(--violet-600); font-weight:700; text-decoration:none; }
+.link:hover{ text-decoration:underline; }
+
+/* Styles untuk Kop Identitas di UI Web (Preview) */
+.kop-preview-container { border: 1.5px solid var(--line); border-radius: 12px; padding: 18px; margin-bottom: 24px; background: var(--bg); }
+.kop-table-ui{ border:none; margin-bottom:16px; width:100%; border-collapse:collapse; }
+.kop-table-ui td{ border:none; padding:6px 8px; font-size:13.5px; vertical-align:top; }
+.kop-title-ui{ text-align:center; font-weight:800; font-size:20px; margin-bottom:4px; color:var(--violet-900); font-family:'Lora', serif; }
+[data-theme="dark"] .kop-title-ui{ color:var(--violet-100); }
+.kop-sub-ui{ text-align:center; font-size:12px; color:var(--ink-soft); margin-bottom:20px; font-weight:500; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" data-presets="react">
+const {useState, useEffect, useRef, useMemo, useCallback} = React;
+
+/* ---------------- constants ---------------- */
+const FASE_OPTIONS = [
+  {v:"Fase A (1-2)", l:"Fase A — Kelas 1-2 SD"},
+  {v:"Fase B (3-4)", l:"Fase B — Kelas 3-4 SD"},
+  {v:"Fase C (5-6)", l:"Fase C — Kelas 5-6 SD"},
+  {v:"Fase D (7-9)", l:"Fase D — Kelas 7-9 SMP"},
+  {v:"Fase E (10)", l:"Fase E — Kelas 10 SMA/SMK"},
+  {v:"Fase F (11-12)", l:"Fase F — Kelas 11-12 SMA/SMK"},
+];
+const MODEL_OPTIONS = ["Project Based Learning (PjBL)","Problem Based Learning (PBL)","Discovery Learning","Inquiry Learning","Cooperative Learning","Contextual Teaching and Learning"];
+const METODE_OPTIONS = ["Ceramah Interaktif","Tanya Jawab","Observasi","Role Play","Peer Teaching","Demonstrasi","Simulasi","Studi Kasus","Project","Diskusi Kelompok","Praktikum","Presentasi","Refleksi"];
+const JP_JUMLAH_OPTIONS = ["1","2","3","4","5","6"];
+const JP_MENIT_OPTIONS = ["30","35","40","45"];
+const DIMENSI_OPTIONS = ["Keimanan dan Ketakwaan terhadap Tuhan YME","Kewargaan","Penalaran Kritis","Kreativitas","Kolaborasi","Kemandirian","Kesehatan","Komunikasi"];
+const LINGKUNGAN_OPTIONS = ["Ruang Fisik","Ruang Virtual","Industri","Teaching Factory","Laboratorium"];
+const MEDIA_OPTIONS = ["PPT","Video","LMS","AI","Quizizz","PhET","Canva","Internet","LKPD Digital","Google Classroom","Kahoot","Laboratorium Fisik"];
+const OUTPUT_DOCS = [
+  {key:"modul", name:"Modul Ajar", icon:"📘", color:"#4c6ef5", desc:"Modul lengkap + Blok TTD Guru & Kepsek"},
+  {key:"materi", name:"Materi Ajar", icon:"📖", color:"#7c5cff", desc:"Bahan materi detail untuk siswa membaca"},
+  {key:"lkpd", name:"LKPD", icon:"📝", color:"#f2994a", desc:"Lembar Kerja Peserta Didik sesuai tahapan"},
+  {key:"asesmen", name:"Asesmen", icon:"✅", color:"#20c997", desc:"Instrumen penilaian 3 jenis (As/For/Of)"},
+  {key:"soalEvaluasi", name:"Soal Evaluasi", icon:"🎯", color:"#e8590c", desc:"Soal PG, Essay, HOTS + Kunci Jawaban"},
+  {key:"tindakLanjut", name:"Tindak Lanjut", icon:"🔁", color:"#8b5cf6", desc:"Rencana Remedial & Pengayaan"},
+];
+const DOC_LABEL = {modul:"Modul Ajar", materi:"Materi Ajar", lkpd:"LKPD", asesmen:"Asesmen", soalEvaluasi:"Soal Evaluasi", tindakLanjut:"Tindak Lanjut"};
+const MARKER = (k)=>`<<<DOKUMEN:${k.toUpperCase()}>>>`;
+const MARKER_END = "<<<END_DOKUMEN>>>";
+
+// Model Gemini dikembalikan agar lengkap.
+const GEMINI_MODEL_CHOICES = [
+  {value:"gemini-3.5-flash", label:"Gemini 3.5 Flash — Terbaru & Gratis", tier:"free"},
+  {value:"gemini-3-flash-preview", label:"Gemini 3 Flash Preview — Gratis", tier:"free"},
+  {value:"gemini-3.1-flash-lite", label:"Gemini 3.1 Flash-Lite — Gratis, hemat & cepat", tier:"free"},
+  {value:"gemini-2.5-flash", label:"Gemini 2.5 Flash — Gratis", tier:"free"},
+  {value:"gemini-2.5-flash-lite", label:"Gemini 2.5 Flash-Lite — Gratis, paling hemat", tier:"free"},
+  {value:"gemini-2.5-pro", label:"Gemini 2.5 Pro — Gratis (kuota terbatas)", tier:"free"},
+  {value:"gemini-2.0-flash", label:"Gemini 2.0 Flash — Cepat", tier:"free"},
+  {value:"gemini-3.1-pro-preview", label:"Gemini 3.1 Pro — Berbayar, penalaran terkuat", tier:"pro"},
+];
+const DEFAULT_GEMINI_MODEL = "gemini-3.5-flash";
+
+// API Key Gemini kini diatur lewat menu Pengaturan (ikon ⚙️ di header) dan tersimpan otomatis
+// di penyimpanan lokal browser Anda.
+const GEMINI_API_KEY_FALLBACK = "";
+
+const DEFAULT_FORM = {
+  namaPenyusun:"", nip:"", namaSekolah:"", namaKepsek:"", nipKepsek:"", mapel:"", konsentrasi:"",
+  fase:"", kelas:"", semester:"Ganjil", tahunPelajaran:"2026/2027",
+  tp:"", topik:"", elemenCP:"", model:"", metode:[], jpJumlah:"2", jpMenit:"40", jumlahPertemuan:"1",
+  dimensi:["Keimanan dan Ketakwaan terhadap Tuhan YME","Penalaran Kritis","Kolaborasi","Kreativitas","Komunikasi"],
+  lingkungan:["Ruang Fisik"], media:["PPT","LKPD Digital","AI","Internet"], karakteristikMurid:"", sarana:"",
+  instruksiKhusus:"",
+};
+
+const PROGRESS_STEP_MAP = {
+  modul: "Merancang Modul Ajar — alur Memahami → Mengaplikasi → Merefleksi...",
+  materi: "Menulis Materi Ajar sebagai bahan bacaan siswa...",
+  lkpd: "Menyusun LKPD berbasis alur belajar & kolom refleksi murid...",
+  asesmen: "Menyusun 3 jenis instrumen asesmen beserta rubrik deskriptif...",
+  soalEvaluasi: "Menyusun Soal Evaluasi (PG, Essay, HOTS) & kunci jawaban...",
+  tindakLanjut: "Menyusun rencana remedial & pengayaan (tindak lanjut)...",
+};
+function buildProgressSteps(outputs){
+  const steps = ["Menyiapkan identitas modul & konteks pembelajaran..."];
+  (outputs.length?outputs:["modul"]).forEach(k=> steps.push(PROGRESS_STEP_MAP[k] || `Menyusun ${DOC_LABEL[k]||k}...`));
+  steps.push("Memvalidasi kelengkapan 3 prinsip PM (Berkesadaran, Bermakna, Menggembirakan)...");
+  steps.push("Merapikan format markdown & penanda dokumen...");
+  return steps;
+}
+
+/* ---------------- storage helper ---------------- */
+function safeStorage(){
+  try{
+    const testKey="__t__"; localStorage.setItem(testKey,"1"); localStorage.removeItem(testKey);
+    return {
+      get:(k)=>{ try{ return localStorage.getItem(k); }catch(e){ return null; } },
+      set:(k,v)=>{ try{ localStorage.setItem(k,v); return true; }catch(e){ return false; } },
+      remove:(k)=>{ try{ localStorage.removeItem(k); return true; }catch(e){ return false; } },
+    };
+  }catch(e){
+    const mem = {};
+    return {
+      get:(k)=> (k in mem ? mem[k] : null),
+      set:(k,v)=>{ mem[k]=v; return true; },
+      remove:(k)=>{ delete mem[k]; return true; },
+    };
+  }
+}
+const store = safeStorage();
+function debounce(fn, delay){
+  let t = null;
+  return (...args)=>{ if(t) clearTimeout(t); t = setTimeout(()=>fn(...args), delay); };
+}
+function sanitizeFilename(s){
+  return String(s||"file").replace(/[\\/:*?"<>|]/g,"_").replace(/\s+/g,"_").slice(0,80);
+}
+function formatBytes(n){
+  if(!n && n!==0) return "";
+  if(n < 1024) return n + " B";
+  if(n < 1024*1024) return (n/1024).toFixed(1) + " KB";
+  return (n/(1024*1024)).toFixed(1) + " MB";
+}
+
+/* ---------------- markdown ---------------- */
+function renderMd(text){
+  if(!text) return "";
+  try{ return marked.parse(text, {breaks:true}); }catch(e){ return text.replace(/\n/g,"<br/>"); }
+}
+
+/* ---------------- system prompt ---------------- */
+function buildSystemInstruction(){
+  return `Anda adalah asisten ahli kurikulum yang membantu guru di Indonesia menyusun perangkat ajar sesuai kerangka resmi PEMBELAJARAN MENDALAM (PM) sebagaimana diatur dalam Permendikdasmen No. 13 Tahun 2025 tentang Standar Proses. Ikuti kerangka berikut secara KETAT, LENGKAP, dan JANGAN disederhanakan atau diringkas melebihi yang diminta.
+
+=== 0. KEPATUHAN FORMAT (WAJIB, prioritas tertinggi) ===
+- JANGAN gunakan format RPP lama (Kegiatan Pendahuluan/Inti/Penutup). Gunakan HANYA struktur alur Memahami–Mengaplikasi–Merefleksi.
+- JANGAN membungkus jawaban dengan code fence tiga backtick (\`\`\`) dalam bentuk apa pun.
+- JANGAN menyisakan placeholder seperti "[isi di sini]", "(lengkapi)", atau teks instruksi kepada guru di dalam dokumen final — semua bagian harus sudah terisi penuh dan siap pakai.
+- JANGAN menulis apa pun (basa-basi, catatan, ringkasan) di luar blok penanda dokumen yang diwajibkan pada bagian FORMAT KELUARAN.
+- Gunakan Bahasa Indonesia baku sesuai kaidah EYD, istilah pendidikan yang konsisten, dan hindari pengulangan kalimat generik antar dokumen.
+
+=== 1. TIGA PRINSIP UTAMA PM (wajib tercermin eksplisit di SETIAP tahap, bukan hanya disebut sekali) ===
+- BERKESADARAN (mindful): murid memahami tujuan & strategi belajarnya sehingga punya arah dan motivasi intrinsik.
+- BERMAKNA (meaningful): materi & aktivitas relevan dengan kehidupan nyata, dunia kerja, dan konteks murid, memberi nilai serta dampak nyata.
+- MENGGEMBIRAKAN (joyful): suasana belajar positif, menantang, penuh apresiasi, menumbuhkan rasa senang, percaya diri, dan kebahagiaan belajar.
+
+=== 2. ALUR PENGALAMAN BELAJAR: MEMAHAMI → MENGAPLIKASI → MEREFLEKSI ===
+Setiap Modul Ajar dan LKPD WAJIB dibagi ke 3 tahap ini (BUKAN format lama pembukaan-inti-penutup), masing-masing dengan estimasi waktu, aktivitas guru, aktivitas murid, dan prinsip PM yang ditegaskan secara eksplisit:
+
+a) MEMAHAMI (Understanding): membangun konstruksi pengetahuan aktif & mendalam. Fokus: pengetahuan esensial (dasar fundamental), pengetahuan aplikatif (penerapan teori), nilai dan karakter (etika & kemanusiaan). Guru menghubungkan pengetahuan baru ke pengetahuan sebelumnya & konteks sehari-hari, memberi kebebasan eksploratif & kolaboratif. Terapkan prinsip Berkesadaran (murid sadar tujuan belajar) dan Bermakna (murid rasakan relevansi materi).
+
+b) MENGAPLIKASI (Applying): menerapkan pengetahuan dalam konteks nyata/simulasi dunia kerja. Fokus: pendalaman pengetahuan, pengambilan keputusan, pemecahan masalah konkret. Murid berpikir kritis, membangun solusi kreatif/inovatif menghasilkan produk/kinerja nyata (untuk SMK kaitkan dengan Teaching Factory/proyek industri bila relevan). Terapkan prinsip Bermakna (tantangan nyata, motivasi intrinsik) dan Menggembirakan ("AHA moment" saat berhasil).
+
+c) MEREFLEKSI (Reflecting): mengevaluasi & memaknai proses processes serta hasil belajar. Fokus: regulasi diri (perencanaan-pelaksanaan-evaluasi), menghubungkan pemahaman dengan konteks lebih luas. Murid mengevaluasi diri atas pencapaian & tantangan, merumuskan langkah perbaikan. Terapkan prinsip Menggembirakan (budaya transparansi & apresiasi) dan Berkesadaran (metakognisi, belajar sepanjang hayat).
+
+Tegaskan bahwa hasil refleksi menjadi dasar perencanaan pembelajaran berikutnya (siklus dinamis, reflektif, adaptif, berkelanjutan).
+
+=== 3. INTEGRASI OLAH PIKIR, OLAH HATI, OLAH RASA, OLAH RAGA ===
+Setiap aktivitas belajar yang dirancang harus menyentuh minimal satu dari: Olah Pikir (kritis, kreatif, logis, reflektif), Olah Hati (iman, takwa, empati, karakter mulia), Olah Rasa (peka estetika, budaya, lingkungan), Olah Raga (sehat, bugar, disiplin, tangguh). Sebutkan secara eksplisit unsur mana yang disentuh pada tiap aktivitas utama.
+
+=== 4. ASESMEN DALAM KERANGKA PM (WAJIB 3 JENIS bila dokumen Asesmen diminta) ===
+a) ASSESSMENT AS LEARNING (terkait tahap Memahami): asesmen sebagai pembelajaran, memberi ruang murid merefleksikan proses belajarnya. Teknik: Penilaian Diri, Penilaian Antarteman, Jurnal Reflektif, Ceklis Kemajuan Belajar.
+b) ASSESSMENT FOR LEARNING (terkait tahap Mengaplikasi): asesmen untuk pembelajaran, memberi umpan balik cepat/real-time. Teknik: Pertanyaan Diagnostik, Observasi sistematis, Peta Konsep, Classroom Assessment Techniques (minute paper, muddiest point), Exit Ticket.
+c) ASSESSMENT OF LEARNING (terkait tahap Merefleksi): asesmen hasil pembelajaran, menilai pencapaian kompetensi menyeluruh. Teknik: Tes Tertulis/Lisan, Penilaian Kinerja/Performance, Penilaian Proyek, Portofolio (khusus SMK tambahkan PKL, Uji Kompetensi Keahlian/UKK, skills passport bila relevan).
+Sertakan rubrik penilaian deskriptif (bukan hanya angka, minimal 4 level capaian per kriteria), dan tegaskan asesmen adalah siklus berkelanjutan yang hasilnya menjadi umpan balik untuk perbaikan pembelajaran berikutnya.
+
+=== 5. KOMPONEN PENDUKUNG PM (integrasikan di bagian akhir Modul Ajar) ===
+a) Lingkungan Pembelajaran — sesuai pilihan guru (Ruang Fisik/Virtual/Industri/Teaching Factory/Laboratorium): jelaskan budaya belajar aman & nyaman.
+b) Kemitraan Pembelajaran (bila relevan) — sebutkan potensi kolaborasi lintas mapel, kepala sekolah/pengawas, orang tua/komunitas, atau DUDIKA/dunia kerja (khusus SMK kaitkan Teaching Factory).
+c) Pemanfaatan Digital — sesuai media/alat yang dipilih guru, jelaskan perannya di perencanaan, pelaksanaan, dan asesmen pembelajaran.
+
+=== 6. PENGGUNAAN BAHAN REFERENSI ===
+Jika guru melampirkan bahan referensi, WAJIB jadikan itu basis utama materi, contoh soal, dan studi kasus — jangan berhalusinasi di luar konteks dokumen untuk hal-hal faktual yang seharusnya ada di sana. Jika data yang diminta tidak tersedia di form maupun referensi, buat asumsi wajar yang relevan dengan mata pelajaran dan jenjang, jangan kosongkan bagian tersebut.
+
+=== FORMAT KELUARAN WAJIB ===
+Semua dokumen yang diminta HARUS saling terintegrasi dan konsisten (memakai Tujuan Pembelajaran, topik, dan konteks yang sama). Tulis setiap dokumen dalam format Markdown rapi (heading, bold, list, tabel bila perlu), berbahasa Indonesia baku, siap pakai oleh guru — bukan draf kasar.
+
+Bungkus SETIAP dokumen dengan penanda PERSIS seperti ini, tanpa spasi tambahan, tanpa code fence, dan tanpa teks lain sebelum/sesudah penanda:
+<<<DOKUMEN:NAMA_KUNCI>>>
+(isi dokumen dalam markdown)
+<<<END_DOKUMEN>>>
+
+Gunakan NAMA_KUNCI sesuai permintaan pada prompt pengguna. Jangan menambahkan dokumen di luar yang diminta. Jangan menulis apa pun di luar blok penanda tersebut.
+
+=== FORMAT PER JENIS DOKUMEN ===
+- MODUL: Identitas → Tujuan Pembelajaran & Dimensi Profil Lulusan terpilih → 3 Prinsip PM (uraian singkat penerapannya di modul ini) → Alur Memahami-Mengaplikasi-Merefleksi (rinci per tahap dengan estimasi waktu, aktivitas guru & murid) → Komponen Pendukung (lingkungan/kemitraan/digital) → Daftar Pustaka → WAJIB DIAKHIRI dengan Blok Tanda Tangan berformat tabel dua kolom: kolom kiri "Mengetahui, Kepala Sekolah" beserta baris kosong tanda tangan lalu nama & NIP Kepala Sekolah; kolom kanan tempat/tanggal lalu "Guru Mata Pelajaran" beserta baris kosong tanda tangan lalu nama & NIP/NUPTK Guru Penyusun.
+- MATERI (Materi Ajar): bahan bacaan/materi ajar yang detail dan terstruktur (sub-judul, contoh, ilustrasi konsep) untuk dibaca langsung oleh murid sebagai sumber belajar utama tahap Memahami, sesuai topik dan jenjang, minimal 500-800 kata.
+- LKPD: identitas ringkas → instruksi kerja terstruktur mengikuti 3 tahap alur belajar → ruang jawaban/kerja murid → kolom refleksi mandiri.
+- ASESMEN: 3 jenis asesmen (Assessment as/for/of Learning) lengkap dengan instrumen & rubrik deskriptif.
+- SOAL EVALUASI: paket soal evaluasi akhir berisi 5-10 soal pilihan ganda dan 3-5 soal essay/uraian, mencakup level kognitif HOTS (C4-C6, analisis/evaluasi/kreasi), diurutkan dari mudah ke sulit, WAJIB dilengkapi kunci jawaban lengkap dan pembahasan singkat di bagian akhir, selaras dengan Tujuan Pembelajaran dan topik.
+- TINDAK LANJUT: rencana remedial (untuk yang belum tuntas) dan pengayaan (untuk yang sudah tuntas), dikaitkan hasil Assessment of Learning.
+
+=== CHECKLIST AKHIR SEBELUM MENGIRIM JAWABAN (verifikasi diam-diam, jangan ditampilkan) ===
+Pastikan: (1) semua dokumen yang diminta ada dan masing-masing dibungkus penanda yang benar; (2) ketiga prinsip PM disebutkan eksplisit di setiap tahap alur belajar; (3) tidak ada format RPP lama atau placeholder kosong; (4) tidak ada teks di luar blok penanda; (5) tidak ada code fence \`\`\` yang membungkus dokumen.`;
+}
+
+function formatAlokasi(f){
+  const jp = parseInt(f.jpJumlah,10) || 0;
+  const menit = parseInt(f.jpMenit,10) || 0;
+  const pertemuan = parseInt(f.jumlahPertemuan,10) || 1;
+  if(!jp || !menit) return "-";
+  const totalPerPertemuan = jp*menit;
+  const totalKeseluruhan = totalPerPertemuan*pertemuan;
+  return `${jp} JP x ${menit} menit/JP (±${totalPerPertemuan} menit per pertemuan), ${pertemuan} kali pertemuan, total ±${totalKeseluruhan} menit`;
+}
+
+function buildUserPrompt(f, selectedOutputs, fileTextExtract, fileName){
+  const dims = f.dimensi.join(", ") || "-";
+  const metode = f.metode.join(", ") || "-";
+  const media = f.media.join(", ") || "-";
+  const lingkungan = f.lingkungan.join(", ") || "-";
+  const docsList = selectedOutputs.map(k=>`- ${DOC_LABEL[k]} (kunci: ${k.toUpperCase()})`).join("\n");
+
+  let prompt = `Susunkan perangkat ajar berikut berdasarkan data di bawah ini. Semua dokumen yang diminta harus terintegrasi dan konsisten satu sama lain.
+
+## IDENTIFIKASI
+- Nama Penyusun: ${f.namaPenyusun || "-"}
+- NIP/NUPTK: ${f.nip || "-"}
+- Nama Sekolah: ${f.namaSekolah || "-"}
+- Nama Kepala Sekolah: ${f.namaKepsek || "-"}
+- NIP Kepala Sekolah: ${f.nipKepsek || "-"}
+- Mata Pelajaran: ${f.mapel || "-"}
+- Konsentrasi Keahlian (SMK): ${f.konsentrasi || "-"}
+- Fase: ${f.fase || "-"}
+- Kelas: ${f.kelas || "-"}
+- Semester: ${f.semester || "-"}
+- Tahun Pelajaran: ${f.tahunPelajaran || "-"}
+
+## DESAIN PEMBELAJARAN
+- Tujuan Pembelajaran (TP): ${f.tp || "-"}
+- Topik/Materi Pokok: ${f.topik || "-"}
+- Elemen CP: ${f.elemenCP || "-"}
+- Model Pembelajaran Utama: ${f.model || "-"}
+- Metode Pembelajaran: ${metode}
+- Alokasi Waktu: ${formatAlokasi(f)}
+- Dimensi Profil Lulusan yang dituju: ${dims}
+- Lingkungan Pembelajaran: ${lingkungan || "-"}
+- Media & Alat: ${media}
+- Kesiapan & Karakteristik Murid: ${f.karakteristikMurid || "-"}
+- Sarana & Prasarana Sekolah: ${f.sarana || "-"}
+
+## DOKUMEN YANG DIMINTA (buat SEMUA berikut, saling terintegrasi)
+${docsList}
+
+## INSTRUKSI KHUSUS DARI GURU
+${f.instruksiKhusus || "(tidak ada)"}
+`;
+  if(fileTextExtract){
+    prompt += `\n## BAHAN REFERENSI TERLAMPIR${fileName?` (${fileName})`:""} (jadikan basis utama materi & soal)\n${fileTextExtract}\n`;
+  } else if(fileName){
+    prompt += `\n## BAHAN REFERENSI TERLAMPIR\nFile terlampir langsung ke model: ${fileName}. Jadikan basis utama materi & soal.\n`;
+  }
+  prompt += `\nIngat: bungkus setiap dokumen dengan penanda <<<DOKUMEN:KUNCI>>> ... <<<END_DOKUMEN>>> sesuai kunci pada daftar di atas, tanpa code fence, tanpa teks tambahan di luar penanda.`;
+  return prompt;
+}
+
+/* ---------------- parser hasil AI — lebih toleran terhadap marker tidak lengkap ---------------- */
+function cleanLatex(s){
+  if(!s) return s;
+  let t = s;
+  // $$...$$  (blok rumus) -> ambil isinya, bersihkan perintah LaTeX di dalamnya
+  t = t.replace(/\$\$([\s\S]*?)\$\$/g, (_, inner)=>latexToPlain(inner));
+  // $...$ (inline rumus)
+  t = t.replace(/\$([^$\n]{1,300}?)\$/g, (_, inner)=>latexToPlain(inner));
+  // sisa perintah LaTeX yang mungkin lolos tanpa tanda $
+  t = latexToPlain(t);
+  return t;
+}
+function latexToPlain(s){
+  if(!s) return s;
+  let t = s;
+  t = t.replace(/\\text\{([^}]*)\}/g, "$1");
+  t = t.replace(/\\rightarrow/g, "→");
+  t = t.replace(/\\leftarrow/g, "←");
+  t = t.replace(/\\Rightarrow/g, "⇒");
+  t = t.replace(/\\le\b/g, "≤");
+  t = t.replace(/\\ge\b/g, "≥");
+  t = t.replace(/\\leq\b/g, "≤");
+  t = t.replace(/\\geq\b/g, "≥");
+  t = t.replace(/\\times/g, "×");
+  t = t.replace(/\\div/g, "÷");
+  t = t.replace(/\\cdot/g, "×");
+  t = t.replace(/\\pm/g, "±");
+  t = t.replace(/\\neq/g, "≠");
+  t = t.replace(/\\approx/g, "≈");
+  t = t.replace(/\\frac\{([^}]*)\}\{([^}]*)\}/g, "($1 / $2)");
+  t = t.replace(/\\%/g, "%");
+  t = t.replace(/\\,/g, " ");
+  t = t.replace(/\\\\/g, " ");
+  t = t.replace(/[{}]/g, "");
+  return t;
+}
+function stripFences(s){
+  if(!s) return s;
+  let t = s.trim();
+  t = t.replace(/^```[a-zA-Z]*\n?/,"").replace(/```\s*$/,"");
+  t = t.replace(/^<<<\s*DOKUMEN[^>]*>>>\s*/i,"").replace(/<<<\s*END_DOKUMEN\s*>>>\s*$/i,"");
+  t = cleanLatex(t);
+  return t.trim();
+}
+
+function parseDocuments(raw, selectedOutputs){
+  const docs = {};
+  const meta = {};
+  if(!raw) raw = "";
+
+  // Pass 1: exact/lenient marker pairs (toleran spasi, jumlah "<"/">" 2-3, end marker opsional)
+  selectedOutputs.forEach(k=>{
+    const key = k.toUpperCase().replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+    const re = new RegExp(
+      `<{2,3}\\s*DOKUMEN\\s*:\\s*${key}\\s*>{2,3}([\\s\\S]*?)(?=<{2,3}\\s*END_DOKUMEN\\s*>{2,3}|<{2,3}\\s*DOKUMEN\\s*:|$)`,
+      "i"
+    );
+    const m = raw.match(re);
+    if(m && m[1] && m[1].trim().length>0){
+      docs[k] = stripFences(m[1]);
+      meta[k] = "exact";
+    }
+  });
+
+  // Pass 2: untuk yang belum ketemu, cari heading yang cocok dengan nama dokumen (mis. "# MODUL AJAR", "## LKPD")
+  let missing = selectedOutputs.filter(k=>!docs[k]);
+  missing.forEach(k=>{
+    const label = DOC_LABEL[k].replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+    const headingRe = new RegExp(`(?:^|\\n)#{1,4}\\s*[^\\n]*${label}[^\\n]*\\n([\\s\\S]*?)(?=\\n#{1,4}\\s|$)`, "i");
+    const hm = raw.match(headingRe);
+    if(hm && hm[1] && hm[1].trim().length>20){
+      docs[k] = stripFences(hm[1]);
+      meta[k] = "heading";
+    }
+  });
+
+  // Pass 3: jika sama sekali tidak ada yang cocok dan hanya 1 dokumen diminta, dan raw punya isi -> dump semua
+  missing = selectedOutputs.filter(k=>!docs[k]);
+  const foundAny = Object.keys(docs).length>0;
+  if(!foundAny && raw.trim() && selectedOutputs.length){
+    docs[selectedOutputs[0]] = stripFences(raw);
+    meta[selectedOutputs[0]] = "fallback_all";
+    missing = missing.filter(k=>k!==selectedOutputs[0]);
+  }
+
+  selectedOutputs.forEach(k=>{
+    if(docs[k]===undefined){ docs[k]=""; meta[k]="missing"; }
+  });
+
+  return {docs, meta};
+}
+
+/* ---------------- Gemini API ---------------- */
+const RETRYABLE_STATUS = [503, 429];
+function sleep(ms){ return new Promise(r=>setTimeout(r, ms)); }
+
+async function callGemini({apiKey, model, systemInstruction, userPrompt, fileData, onRetry}){
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
+  const parts = [{text: userPrompt}];
+  if(fileData && fileData.inline){
+    parts.push({inlineData:{mimeType:fileData.mimeType, data:fileData.base64}});
+  }
+  const body = {
+    systemInstruction: {parts:[{text: systemInstruction}]},
+    contents: [{role:"user", parts}],
+    generationConfig: {temperature:0.85, maxOutputTokens:8192},
+  };
+
+  const maxAttempts = 5; // Lebih agresif: 1 kali kirim + 4 kali retry otomatis
+  let lastMsg = "";
+  for(let attempt=1; attempt<=maxAttempts; attempt++){
+    let res;
+    try{
+      res = await fetch(url, {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(body)});
+    }catch(networkErr){
+      throw new Error(
+        "Gagal terhubung ke server Gemini (Failed to fetch) — ini error jaringan/browser SEBELUM sempat memeriksa API key. Penyebab umum: " +
+        "(1) tidak ada koneksi internet; (2) ad-blocker memblokir Google API; (3) firewall jaringan sekolah/kantor; (4) dibuka lewat file:// bukan localhost."
+      );
+    }
+
+    if(res.ok){
+      const data = await res.json();
+      const cand = data?.candidates?.[0];
+      if(!cand) throw new Error("Respons API kosong. Coba lagi atau periksa API key Anda.");
+      const text = (cand.content?.parts || []).map(p=>p.text || "").join("\n");
+      if(!text.trim()) throw new Error("Model tidak mengembalikan teks. Coba generate ulang.");
+      return text;
+    }
+
+    let msg = `Gagal memanggil Gemini API (status ${res.status}).`;
+    try{ const j = await res.json(); if(j?.error?.message) msg += " " + j.error.message; }catch(e){}
+    lastMsg = msg;
+
+    if(RETRYABLE_STATUS.includes(res.status) && attempt < maxAttempts){
+      // Exponential backoff with jitter: 1s, 2s, 4s, 8s + sedikit acak
+      const waitMs = Math.pow(2, attempt - 1) * 1000 + Math.floor(Math.random() * 500); 
+      if(onRetry) onRetry({attempt, maxAttempts, waitMs, status:res.status});
+      await sleep(waitMs);
+      continue;
+    }
+    const extra = res.status===503
+      ? " Model sedang dipakai banyak orang (kondisi sementara). Sudah dicoba ulang otomatis beberapa kali — silakan coba lagi sesaat lagi, atau ganti model lain (mis. Gemini 1.5 Flash) lewat menu ⚙️ Pengaturan."
+      : res.status===429
+      ? " Kuota/limit permintaan tercapai. Tunggu sebentar lalu coba lagi, atau ganti ke model lain di menu ⚙️ Pengaturan."
+      : "";
+    throw new Error(lastMsg + extra);
+  }
+  throw new Error(lastMsg || "Gagal memanggil Gemini API.");
+}
+
+/* ---------------- validasi form ---------------- */
+function validateForm(form, outputs, apiKey){
+  const errors = [];
+  const warnings = [];
+  const fieldErrors = {};
+
+  if(!apiKey){
+    errors.push("API Key Gemini belum diisi. Klik ikon ⚙️ di pojok kanan atas untuk memasukkannya.");
+  }
+  if(!form.mapel.trim()){ errors.push("Mata Pelajaran wajib diisi."); fieldErrors.mapel = "Wajib diisi."; }
+  if(!form.topik.trim()){ errors.push("Topik/Materi Pokok wajib diisi."); fieldErrors.topik = "Wajib diisi."; }
+  if(form.tp.trim().length < 10){ errors.push("Tujuan Pembelajaran wajib diisi (minimal 10 karakter, buat sespesifik mungkin)."); fieldErrors.tp = "Minimal 10 karakter."; }
+  if(form.dimensi.length === 0){ errors.push("Pilih minimal 1 Dimensi Profil Lulusan."); fieldErrors.dimensi = "Pilih minimal 1."; }
+  if(outputs.length === 0){ errors.push("Pilih minimal 1 dokumen output."); fieldErrors.outputs = "Pilih minimal 1."; }
+  const jp = parseInt(form.jumlahPertemuan, 10);
+  if(form.jumlahPertemuan && (isNaN(jp) || jp < 1)){ errors.push("Jumlah pertemuan harus angka minimal 1."); fieldErrors.jumlahPertemuan = "Harus angka ≥ 1."; }
+
+  if(!form.fase) warnings.push("Fase belum dipilih — hasil mungkin kurang sesuai jenjang.");
+  if(!form.model) warnings.push("Model Pembelajaran Utama belum dipilih.");
+  if(!form.jpJumlah || !form.jpMenit) warnings.push("Alokasi Waktu (JP, menit/JP) belum lengkap dipilih.");
+  if(!form.namaSekolah.trim()) warnings.push("Nama Sekolah belum diisi — kop dokumen Word akan kosong.");
+  if(outputs.includes("modul") && !form.nipKepsek.trim()) warnings.push("NIP Kepala Sekolah belum diisi — blok tanda tangan Modul Ajar akan kosong.");
+  if(!form.metode.length) warnings.push("Metode Pembelajaran belum dipilih — AI akan menentukan sendiri.");
+  if(!form.karakteristikMurid.trim()) warnings.push("Kesiapan & Karakteristik Murid belum diisi — hasil bisa kurang personal.");
+  if(form.tahunPelajaran && !/^\d{4}\/\d{4}$/.test(form.tahunPelajaran.trim())){
+    warnings.push("Format Tahun Pelajaran sebaiknya seperti 2025/2026.");
+  }
+
+  return {errors, warnings, fieldErrors};
+}
+
+/* ---------------- small components ---------------- */
+function IconGear(){ 
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
+      <circle cx="12" cy="12" r="3"></circle>
+    </svg>
+  ); 
+}
+function IconClock(){ return (<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.8"/><path d="M12 7v5l3.5 2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg>); }
+function IconSun(){ return (<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4.5" stroke="currentColor" strokeWidth="1.8"/><path d="M12 2.5v2M12 19.5v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M2.5 12h2M19.5 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg>); }
+function IconMoon(){ return (<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.8 6.8 0 0 0 10.5 10.5Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"/></svg>); }
+function IconCopy(){ return (<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="9" y="9" width="11" height="11" rx="2" stroke="currentColor" strokeWidth="1.8"/><path d="M5 15V5a2 2 0 0 1 2-2h10" stroke="currentColor" strokeWidth="1.8"/></svg>); }
+function IconDownload(){ return (<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0 4-4m-4 4-4-4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg>); }
+function IconRefresh(){ return (<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3.5 12a8.5 8.5 0 0 1 14.6-5.9L20.5 8.5M20.5 3.5V8.5H15.5M20.5 12a8.5 8.5 0 0 1-14.6 5.9L3.5 15.5M3.5 20.5V15.5H8.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>); }
+function IconEye(){ return (<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" stroke="currentColor" strokeWidth="1.8"/><circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.8"/></svg>); }
+function IconStack(){ return (<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 3 2 8l10 5 10-5-10-5Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round"/><path d="M2 13l10 5 10-5M2 18l10 5 10-5" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round"/></svg>); }
+
+function Toast({message}){
+  if(!message) return null;
+  return <div className="toast">{message}</div>;
+}
+
+function CheckChip({label, checked, onClick}){
+  return (
+    <label className={"chk" + (checked?" active":"")}>
+      <input type="checkbox" checked={checked} onChange={onClick} />
+      <span>{label}</span>
+    </label>
+  );
+}
+
+/* ---------------- Word (.doc) & UI Preview Kop Helpers ---------------- */
+const DOC_HTML_STYLE = `
+  @page { size: 21cm 29.7cm; margin: 2.5cm 2cm; }
+  body{ font-family:Arial, Calibri, sans-serif; font-size:13.5px; line-height:1.6; color:#1a1a1a; text-align:justify; }
+  p{ margin:0 0 8px 0; text-align:justify; }
+  h1,h2,h3{ font-family:Arial, Calibri, sans-serif; color:#2e1863; text-align:left; }
+  h1{ font-size:20px; margin-top:0; } h2{ font-size:16px; } h3{ font-size:14px; }
+  table{ border-collapse:collapse; width:100%; margin:10px 0; }
+  th,td{ border:1px solid #999; padding:6px 8px; font-size:12.5px; text-align:left; }
+  th{ background:#f2edff; }
+  li{ text-align:justify; }
+  .page-break{ page-break-before:always; mso-page-break-before:always; mso-special-character:line-break; }
+`;
+
+function buildKopHtml(form, docTitle, pageBreak){
+  // Kop ini sekarang akan tampil baik di Word maupun di layar web preview
+  const breakStyle = pageBreak ? ' style="page-break-before:always; mso-page-break-before:always;"' : '';
+  return `
+  <div class="kop-preview-container">
+    <div class="kop-title-ui"${breakStyle}>${docTitle}</div>
+    <div class="kop-sub-ui">Disusun mengikuti kerangka Pembelajaran Mendalam — Permendikdasmen No. 13/2025</div>
+    <table class="kop-table-ui" style="width:100%; border-collapse:collapse; margin-bottom:16px;">
+      <tr>
+        <td style="width:18%; border:none; padding:4px;"><b>Mata Pelajaran</b></td>
+        <td style="width:32%; border:none; padding:4px;">: ${form.mapel || "-"}</td>
+        <td style="width:18%; border:none; padding:4px;"><b>Fase / Kelas</b></td>
+        <td style="width:32%; border:none; padding:4px;">: ${form.fase || "-"} / ${form.kelas || "-"}</td>
+      </tr>
+      <tr>
+        <td style="border:none; padding:4px;"><b>Sekolah</b></td>
+        <td style="border:none; padding:4px;">: ${form.namaSekolah || "-"}</td>
+        <td style="border:none; padding:4px;"><b>Semester</b></td>
+        <td style="border:none; padding:4px;">: ${form.semester || "-"}</td>
+      </tr>
+      <tr>
+        <td style="border:none; padding:4px;"><b>Penyusun</b></td>
+        <td style="border:none; padding:4px;">: ${form.namaPenyusun || "-"}</td>
+        <td style="border:none; padding:4px;"><b>Tahun Pelajaran</b></td>
+        <td style="border:none; padding:4px;">: ${form.tahunPelajaran || "-"}</td>
+      </tr>
+      <tr>
+        <td style="border:none; padding:4px;"><b>Topik</b></td>
+        <td colspan="3" style="border:none; padding:4px;">: ${form.topik || "-"}</td>
+      </tr>
+    </table>
+    <hr style="border:none; border-top:1.5px solid var(--line, #ccc); margin:18px 0;"/>
+  </div>`;
+}
+
+function buildDocHtmlDocument(bodyHtml, title){
+  return `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+  <head><meta charset="utf-8"><title>${title}</title>
+  <!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View><w:Zoom>100</w:Zoom><w:DoNotOptimizeForBrowser/></w:WordDocument></xml><![endif]-->
+  <style>${DOC_HTML_STYLE}</style>
+  </head>
+  <body>${bodyHtml}</body></html>`;
+}
+
+function downloadBlob(content, filename, mime){
+  const blob = new Blob(['\ufeff', content], {type:mime});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=> URL.revokeObjectURL(a.href), 4000);
+}
+
+function PromptPreviewModal({open, onClose, systemText, userText, onCopy}){
+  const [tab, setTab] = useState("user");
+  if(!open) return null;
+  const text = tab==="user" ? userText : systemText;
+  return (
+    <div className="modal-backdrop" onClick={onClose}>
+      <div className="modal wide" onClick={e=>e.stopPropagation()}>
+        <button className="modal-close" onClick={onClose}>✕</button>
+        <h3>Preview Prompt</h3>
+        <p className="hint" style={{marginBottom:6}}>Ini persis teks yang akan dikirim ke Gemini API berdasarkan isian form saat ini.</p>
+        <div className="prompt-tabs">
+          <button className={tab==="user"?"active":""} onClick={()=>setTab("user")}>Prompt Pengguna</button>
+          <button className={tab==="system"?"active":""} onClick={()=>setTab("system")}>Instruksi Sistem (PM)</button>
+        </div>
+        <div className="prompt-pre">{text}</div>
+        <div className="modal-actions">
+          <button className="btn ghost" onClick={onClose}>Tutup</button>
+          <button className="btn primary" onClick={()=>onCopy(text)}>Salin Teks Ini</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ---------------- main App ---------------- */
+function App(){
+  const [theme, setTheme] = useState(()=> store.get("pm_theme") || "light");
+  const [apiKey, setApiKey] = useState(()=> store.get("pm_gemini_key") || GEMINI_API_KEY_FALLBACK);
+  const [model, setModel] = useState(()=> store.get("pm_gemini_model") || DEFAULT_GEMINI_MODEL);
+  const [showSettings, setShowSettings] = useState(false);
+  const [showKey, setShowKey] = useState(false);
+  const [tempKey, setTempKey] = useState(apiKey);
+  const [tempModel, setTempModel] = useState(model);
+  const [showHistory, setShowHistory] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
+  const [history, setHistory] = useState(()=>{
+    try{ return JSON.parse(store.get("pm_history") || "[]"); }catch(e){ return []; }
+  });
+  const [toast, setToast] = useState("");
+
+  const restoredRef = useRef(false);
+  const [form, setForm] = useState(()=>{
+    try{
+      const raw = store.get("pm_autosave");
+      if(raw){
+        const snap = JSON.parse(raw);
+        if(snap && snap.form){ restoredRef.current = true; return {...DEFAULT_FORM, ...snap.form}; }
+      }
+    }catch(e){}
+    return DEFAULT_FORM;
+  });
+  
+  const [outputs, setOutputs] = useState(()=>{
+    try{
+      const raw = store.get("pm_autosave");
+      if(raw){ 
+        const snap = JSON.parse(raw); 
+        if(snap && Array.isArray(snap.outputs) && snap.outputs.length) {
+          const order = OUTPUT_DOCS.map(d=>d.key);
+          return order.filter(k => snap.outputs.includes(k));
+        }
+      }
+    }catch(e){}
+    return ["modul","materi","lkpd","asesmen","soalEvaluasi","tindakLanjut"];
+  });
+  
+  const [file, setFile] = useState(null);
+  const [fileBase64, setFileBase64] = useState(null);
+  const [fileTextExtract, setFileTextExtract] = useState("");
+  const [dragOver, setDragOver] = useState(false);
+  const [fileReading, setFileReading] = useState(false);
+  const [fileError, setFileError] = useState("");
+  const [lastSaved, setLastSaved] = useState(null);
+
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [progressIdx, setProgressIdx] = useState(0);
+  const [elapsed, setElapsed] = useState(0);
+  const [retryNote, setRetryNote] = useState("");
+  const [errors, setErrors] = useState([]);
+  const [warnings, setWarnings] = useState([]);
+  const [fieldErrors, setFieldErrors] = useState({});
+  const [results, setResults] = useState(null);
+  const [parseMeta, setParseMeta] = useState({});
+  const [activeTab, setActiveTab] = useState(null);
+  const [regenKey, setRegenKey] = useState(null);
+
+  // Fitur bertenaga LLM baru
+  const [isGeneratingTP, setIsGeneratingTP] = useState(false);
+  const [isGeneratingInstruksi, setIsGeneratingInstruksi] = useState(false);
+  const [isReviewing, setIsReviewing] = useState(false);
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [reviewResult, setReviewResult] = useState("");
+
+  const progressTimer = useRef(null);
+  const elapsedTimer = useRef(null);
+
+  useEffect(()=>{ document.documentElement.setAttribute("data-theme", theme); store.set("pm_theme", theme); }, [theme]);
+  useEffect(()=>{ store.set("pm_gemini_model", model); }, [model]);
+  useEffect(()=>{ if(toast){ const t=setTimeout(()=>setToast(""), 2400); return ()=>clearTimeout(t); } }, [toast]);
+  useEffect(()=>{
+    if(restoredRef.current){
+      restoredRef.current = false;
+      setToast("Draft sebelumnya berhasil dipulihkan");
+    }
+  }, []);
+  useEffect(()=>{
+    return ()=>{ if(progressTimer.current) clearInterval(progressTimer.current); if(elapsedTimer.current) clearInterval(elapsedTimer.current); };
+  }, []);
+
+  const autosave = useMemo(()=> debounce((f,o,fn)=>{
+    try{
+      const snapshot = {form:f, outputs:o, fileName:fn, savedAt:new Date().toISOString()};
+      const ok = store.set("pm_autosave", JSON.stringify(snapshot));
+      if(ok) setLastSaved(new Date());
+    }catch(e){}
+  }, 700), []);
+  useEffect(()=>{ autosave(form, outputs, file?file.name:null); }, [form, outputs, file, autosave]);
+
+  function updateField(key, val){
+    setForm(f=>({...f, [key]:val}));
+    if(fieldErrors[key]) setFieldErrors(fe=>{ const n={...fe}; delete n[key]; return n; });
+  }
+  function toggleInList(key, val){
+    setForm(f=>{
+      const list = f[key];
+      const has = list.includes(val);
+      return {...f, [key]: has ? list.filter(x=>x!==val) : [...list, val]};
+    });
+    if(fieldErrors[key]) setFieldErrors(fe=>{ const n={...fe}; delete n[key]; return n; });
+  }
+  function toggleOutput(key){
+    setOutputs(o=>{
+      const next = o.includes(key) ? o.filter(x=>x!==key) : [...o, key];
+      const order = OUTPUT_DOCS.map(d=>d.key);
+      return order.filter(k=>next.includes(k));
+    });
+    if(fieldErrors.outputs) setFieldErrors(fe=>{ const n={...fe}; delete n.outputs; return n; });
+  }
+
+  function clearDraft(){
+    setForm(DEFAULT_FORM);
+    setOutputs(["modul","lkpd"]);
+    setFile(null); setFileBase64(null); setFileTextExtract("");
+    store.remove("pm_autosave");
+    setToast("Draft dikosongkan");
+  }
+
+  function saveSettings(){
+    setApiKey(tempKey);
+    setModel(tempModel);
+    store.set("pm_gemini_key", tempKey);
+    store.set("pm_gemini_model", tempModel);
+    setShowSettings(false);
+    setToast("Pengaturan disimpan");
+  }
+
+  function handleFile(f){
+    if(!f) return;
+    setFileError("");
+    const validExt = /\.(pdf|txt|md)$/i.test(f.name);
+    if(!validExt){ setFileError("Format file tidak didukung. Gunakan PDF, TXT, atau MD."); return; }
+    if(f.size > 50*1024*1024){ setFileError("Ukuran file referensi maksimal 50MB."); return; }
+    setFile(f);
+    setFileReading(true);
+    const isPdf = f.type === "application/pdf" || f.name.toLowerCase().endsWith(".pdf");
+    const reader = new FileReader();
+    reader.onerror = ()=>{ setFileReading(false); setFileError("Gagal membaca file. Coba file lain."); setFile(null); };
+    if(isPdf){
+      reader.onload = (e)=>{
+        try{
+          const base64 = e.target.result.split(",")[1];
+          setFileBase64({inline:true, mimeType:"application/pdf", base64});
+          setFileTextExtract("");
+        }catch(err){ setFileError("Gagal memproses file PDF."); }
+        finally{ setFileReading(false); }
+      };
+      reader.readAsDataURL(f);
+    }else{
+      reader.onload = (e)=>{
+        const full = String(e.target.result);
+        setFileTextExtract(full.slice(0, 20000));
+        setFileBase64(null);
+        setFileReading(false);
+        if(full.length > 20000) setToast("Referensi dipotong ke 20.000 karakter pertama");
+      };
+      reader.readAsText(f);
+    }
+  }
+  function removeFile(){
+    setFile(null); setFileBase64(null); setFileTextExtract(""); setFileError("");
+  }
+
+  // --- LLM Powered Features ---
+  async function handleSuggestTP() {
+    if(!apiKey) { setToast("Harap isi API Key Gemini dulu di Pengaturan (⚙️)."); return; }
+    if(!form.mapel || !form.topik) { setToast("Harap isi Mata Pelajaran dan Topik terlebih dahulu."); return; }
+    setIsGeneratingTP(true);
+    try {
+      const prompt = `Berikan 3 contoh Tujuan Pembelajaran (TP) yang spesifik, menantang namun realistis untuk Mata Pelajaran: ${form.mapel}, Topik: ${form.topik}, Fase/Kelas: ${form.fase||'Umum'}/${form.kelas||'Umum'}. Langsung tuliskan poin-poinnya saja tanpa teks pengantar atau penutup. Gunakan bahasa operasional.`;
+      const text = await callGemini({apiKey, model, systemInstruction:"Anda adalah ahli perumus kurikulum yang sangat ringkas.", userPrompt:prompt, fileData:null});
+      updateField("tp", text.trim());
+      setToast("✨ TP otomatis berhasil ditambahkan!");
+    } catch(e) {
+      setToast("Gagal menyarankan TP: " + e.message);
+    } finally {
+      setIsGeneratingTP(false);
+    }
+  }
+
+  async function handleSuggestInstruksi() {
+    if(!apiKey) { setToast("Harap isi API Key Gemini dulu di Pengaturan (⚙️)."); return; }
+    if(!form.mapel || !form.topik) { setToast("Harap isi Mata Pelajaran dan Topik terlebih dahulu."); return; }
+    setIsGeneratingInstruksi(true);
+    try {
+      const prompt = `Buatkan 1 paragraf singkat instruksi khusus kepada asisten AI agar saat membuat modul ajar untuk Mapel: ${form.mapel}, Topik: ${form.topik} hasilnya menjadi lebih kontekstual dengan kehidupan nyata, menarik, dan menggunakan pendekatan isu atau teknologi terkini. Langsung berikan kalimat instruksinya saja.`;
+      const text = await callGemini({apiKey, model, systemInstruction:"Anda adalah ahli pembuat prompt AI untuk guru yang ringkas.", userPrompt:prompt, fileData:null});
+      updateField("instruksiKhusus", text.trim());
+      setToast("✨ Instruksi otomatis berhasil ditambahkan!");
+    } catch(e) {
+      setToast("Gagal menyarankan instruksi: " + e.message);
+    } finally {
+      setIsGeneratingInstruksi(false);
+    }
+  }
+
+  async function handleAIReview() {
+    if(!apiKey) { setToast("Harap isi API Key Gemini dulu di Pengaturan (⚙️)."); return; }
+    if(!form.mapel || !form.topik || !form.tp) { setToast("Minimal isi Mapel, Topik, dan TP untuk direview."); return; }
+    setIsReviewing(true);
+    try {
+      const draftContext = `Mapel: ${form.mapel}\nTopik: ${form.topik}\nFase: ${form.fase||'-'}\nTP: ${form.tp}\nMetode: ${form.metode.join(", ")}\nMedia: ${form.media.join(", ")}\nKarakteristik Murid: ${form.karakteristikMurid}`;
+      const prompt = `Review secara singkat dan kritis rancangan pembelajaran berikut (maksimal 3 paragraf). Berikan 1 pujian spesifik dan 2 saran praktis untuk membuatnya lebih berdampak dan selaras dengan prinsip Pembelajaran Mendalam (bermakna, berkesadaran, menggembirakan).\n\n${draftContext}`;
+      const text = await callGemini({apiKey, model, systemInstruction:"Anda adalah supervisor pendidikan yang ramah, konstruktif, dan tajam.", userPrompt:prompt, fileData:null});
+      setReviewResult(text.trim());
+      setShowReviewModal(true);
+    } catch(e) {
+      setToast("Gagal melakukan review: " + e.message);
+    } finally {
+      setIsReviewing(false);
+    }
+  }
+
+  function startProgressCycle(steps){
+    setProgressIdx(0);
+    setElapsed(0);
+    progressTimer.current = setInterval(()=>{
+      setProgressIdx(i=> Math.min(i+1, steps.length-1));
+    }, 2600);
+    elapsedTimer.current = setInterval(()=> setElapsed(s=>s+1), 1000);
+  }
+  function stopProgressCycle(){
+    if(progressTimer.current) clearInterval(progressTimer.current);
+    if(elapsedTimer.current) clearInterval(elapsedTimer.current);
+  }
+
+  async function handleGenerate(){
+    const v = validateForm(form, outputs, apiKey);
+    setErrors(v.errors); setWarnings(v.warnings); setFieldErrors(v.fieldErrors);
+    if(v.errors.length){ window.scrollTo({top:0, behavior:"smooth"}); return; }
+    const steps = buildProgressSteps(outputs);
+    setIsGenerating(true);
+    setResults(null);
+    setRetryNote("");
+    startProgressCycle(steps);
+    try{
+      const sys = buildSystemInstruction();
+      const userPrompt = buildUserPrompt(form, outputs, fileTextExtract, file?file.name:null);
+      const raw = await callGemini({apiKey, model, systemInstruction:sys, userPrompt, fileData:fileBase64, onRetry:({attempt, maxAttempts, status})=>{
+        setRetryNote(`Server ${status===503?"sedang sibuk":"membatasi permintaan"} — mencoba ulang otomatis (percobaan ${attempt+1}/${maxAttempts})...`);
+      }});
+      setRetryNote("");
+      const parsed = parseDocuments(raw, outputs);
+      setResults(parsed.docs);
+      setParseMeta(parsed.meta);
+      setActiveTab(outputs[0]);
+      const fallbackUsed = Object.values(parsed.meta).some(m=> m!=="exact");
+      const entry = {
+        id: Date.now().toString(),
+        title: `${form.mapel || "Mapel"} — ${form.topik || "Topik"}`,
+        timestamp: new Date().toLocaleString("id-ID"),
+        results: parsed.docs,
+        parseMeta: parsed.meta,
+        outputs,
+        form,
+      };
+      const newHist = [entry, ...history].slice(0, 30);
+      setHistory(newHist);
+      try{ store.set("pm_history", JSON.stringify(newHist)); }catch(e){}
+      setToast(fallbackUsed ? "Berhasil dibuat (sebagian dipisah otomatis oleh parser cerdas)" : "Perangkat ajar berhasil dibuat");
+    }catch(e){
+      setRetryNote("");
+      setErrors([e.message || "Terjadi kesalahan saat memanggil Gemini API."]);
+      window.scrollTo({top:0, behavior:"smooth"});
+    }finally{
+      setIsGenerating(false);
+      stopProgressCycle();
+    }
+  }
+
+  async function handleRegenerate(docKey){
+    if(!apiKey){ setErrors(["API Key Gemini belum diisi. Klik ikon ⚙️ untuk memasukkannya."]); return; }
+    setRegenKey(docKey);
+    try{
+      const sys = buildSystemInstruction();
+      const userPrompt = buildUserPrompt(form, [docKey], fileTextExtract, file?file.name:null) + `\n\nFokus HANYA membuat ulang dokumen ${DOC_LABEL[docKey]} (kunci ${docKey.toUpperCase()}), dengan variasi baru namun tetap konsisten dengan konteks di atas.`;
+      const raw = await callGemini({apiKey, model, systemInstruction:sys, userPrompt, fileData:fileBase64, onRetry:({attempt, maxAttempts, status})=>{
+        setToast(`Server ${status===503?"sibuk":"membatasi permintaan"}, mencoba ulang (${attempt+1}/${maxAttempts})...`);
+      }});
+      const parsed = parseDocuments(raw, [docKey]);
+      setResults(r=>({...r, [docKey]: parsed.docs[docKey] || r[docKey]}));
+      setParseMeta(pm=>({...pm, [docKey]: parsed.meta[docKey]}));
+      setToast(`${DOC_LABEL[docKey]} berhasil dibuat ulang`);
+    }catch(e){
+      setToast("Gagal regenerate: " + (e.message||""));
+    }finally{
+      setRegenKey(null);
+    }
+  }
+
+  function loadHistory(entry){
+    setResults(entry.results);
+    setParseMeta(entry.parseMeta || {});
+    // Memastikan urutan tetap baku saat dimuat dari riwayat
+    const order = OUTPUT_DOCS.map(d=>d.key);
+    setOutputs(order.filter(k=>(entry.outputs||[]).includes(k)));
+    setForm({...DEFAULT_FORM, ...entry.form});
+    setActiveTab((entry.outputs && entry.outputs.length > 0) ? entry.outputs[0] : null);
+    setShowHistory(false);
+    setToast("Riwayat dimuat");
+    window.scrollTo({top:0, behavior:"smooth"});
+  }
+  function deleteHistory(id, e){
+    e.stopPropagation();
+    const newHist = history.filter(h=>h.id!==id);
+    setHistory(newHist);
+    try{ store.set("pm_history", JSON.stringify(newHist)); }catch(err){}
+  }
+
+  function copyText(text){
+    navigator.clipboard?.writeText(text).then(()=> setToast("Disalin ke clipboard")).catch(()=> setToast("Gagal menyalin"));
+  }
+
+  function downloadMd(docKey, content){
+    downloadBlob(content, `${sanitizeFilename(DOC_LABEL[docKey])}_${sanitizeFilename(form.topik||"materi")}.md`, "text/markdown;charset=utf-8");
+  }
+  function downloadDoc(docKey, content){
+    // Menggunakan body khusus tanpa wrapper UI agar di Word tetap rapi
+    const body = buildKopHtml(form, DOC_LABEL[docKey], false) + renderMd(content);
+    const html = buildDocHtmlDocument(body, DOC_LABEL[docKey]);
+    downloadBlob(html, `${sanitizeFilename(DOC_LABEL[docKey])}_${sanitizeFilename(form.topik||"materi")}.doc`, "application/msword");
+  }
+  function downloadAllDoc(){
+    if(!results) return;
+    const parts = outputs.filter(k=>results[k]).map((k,idx)=>{
+      return buildKopHtml(form, DOC_LABEL[k], idx>0) + renderMd(results[k]);
+    });
+    const html = buildDocHtmlDocument(parts.join("\n"), "Perangkat Ajar - " + (form.topik||"Materi"));
+    downloadBlob(html, `PerangkatAjar_${sanitizeFilename(form.topik||"materi")}.doc`, "application/msword");
+    setToast("Semua dokumen diekspor ke 1 file Word");
+  }
+
+  const completion = useMemo(()=>{
+    const sec1 = !!(form.mapel.trim());
+    const sec2 = !!(form.tp.trim().length>=10 && form.topik.trim() && form.dimensi.length>0);
+    const sec3 = outputs.length>0;
+    return {sec1, sec2, sec3};
+  }, [form, outputs]);
+
+  const steps = useMemo(()=> buildProgressSteps(outputs), [outputs]);
+  const progressPct = isGenerating ? Math.round(((progressIdx+1)/steps.length)*92) : 0;
+
+  return (
+    <React.Fragment>
+      <header className="header">
+        <div className="header-inner">
+          <div className="brand">
+            <div className="brand-mark">PM</div>
+            <div>
+              <div className="brand-title">Generator Perangkat Ajar</div>
+              <div className="brand-sub">Pembelajaran Mendalam</div>
+            </div>
+          </div>
+          <div className="header-actions">
+            <button className="icon-btn" title="Preview Prompt" onClick={()=>setShowPreview(true)}>
+              <IconEye/>
+            </button>
+            <button className="icon-btn" title="Riwayat" onClick={()=>setShowHistory(true)}>
+              <IconClock/>
+              {history.length>0 && <span className="badge-dot"></span>}
+            </button>
+            <button className="icon-btn" title="Pengaturan" onClick={()=>{ setTempKey(apiKey); setTempModel(model); setShowSettings(true); }}>
+              <IconGear/>
+              {!apiKey && <span className="badge-dot"></span>}
+            </button>
+            <button className="icon-btn" title={theme==="dark"?"Mode terang":"Mode gelap"} onClick={()=>setTheme(t=> t==="dark"?"light":"dark")}>
+              {theme==="dark" ? <IconSun/> : <IconMoon/>}
+            </button>
+          </div>
+        </div>
+        <div className="progress-nav">
+          <div className="progress-nav-item"><i style={{width: completion.sec1?"100%":"20%"}}></i></div>
+          <div className="progress-nav-item"><i style={{width: completion.sec2?"100%":"20%"}}></i></div>
+          <div className="progress-nav-item"><i style={{width: completion.sec3?"100%":"20%"}}></i></div>
+          <div className="progress-nav-item"><i style={{width: results?"100%":"20%"}}></i></div>
+        </div>
+      </header>
+
+      <div className="wrap">
+        <section className="hero">
+          <div className="eyebrow">✦ Sesuai Permendikdasmen No. 13/2025</div>
+          <h1>Susun perangkat ajar <span>Pembelajaran Mendalam</span> dalam hitungan menit</h1>
+          <p>Modul, materi ajar, LKPD, asesmen, soal evaluasi, dan tindak lanjut yang terintegrasi, dibangun mengikuti alur Memahami–Mengaplikasi–Merefleksi untuk guru SD, SMP, SMA, dan SMK.</p>
+          <div className="principles-row">
+            <div className="pill"><i style={{background:"var(--mindful)"}}></i>Berkesadaran</div>
+            <div className="pill"><i style={{background:"var(--meaning)"}}></i>Bermakna</div>
+            <div className="pill"><i style={{background:"var(--joy)"}}></i>Menggembirakan</div>
+          </div>
+        </section>
+
+        <div className="autosave-bar">
+          <span className="dot"></span>
+          <span>{lastSaved ? `Draft tersimpan otomatis · ${lastSaved.toLocaleTimeString("id-ID")}` : "Draft akan tersimpan otomatis"}</span>
+          <button onClick={clearDraft}>Kosongkan draft</button>
+        </div>
+
+        {errors.length>0 && (
+          <div className="error-box">
+            <span>⚠️</span>
+            <ul>
+              {errors.map((e,i)=>(<li key={i}>{e}</li>))}
+            </ul>
+          </div>
+        )}
+        {warnings.length>0 && (
+          <div className="warn-box">
+            <span>💡</span>
+            <ul>
+              {warnings.map((w,i)=>(<li key={i}>{w}</li>))}
+            </ul>
+          </div>
+        )}
+
+        {/* SECTION 1 */}
+        <div className="card section-card">
+          <div className="section-head">
+            <div className="section-num">1</div>
+            <div style={{flex:1}}>
+              <div className="section-title-row">
+                <div className="section-title">Identifikasi</div>
+                <div className={"section-status " + (completion.sec1?"ok":"warn")}>{completion.sec1?"✓ Lengkap":"Perlu dilengkapi"}</div>
+              </div>
+              <div className="section-desc">Data guru, sekolah, dan kelas yang diampu.</div>
+            </div>
+          </div>
+          <div className="grid2">
+            <div className="field"><label>Nama Penyusun</label><input className="input" value={form.namaPenyusun} onChange={e=>updateField("namaPenyusun", e.target.value)} placeholder="Nama lengkap Anda"/></div>
+            <div className="field"><label>NIP / NUPTK <span className="opt">(opsional)</span></label><input className="input" value={form.nip} onChange={e=>updateField("nip", e.target.value)}/></div>
+            <div className="field"><label>Nama Sekolah</label><input className="input" value={form.namaSekolah} onChange={e=>updateField("namaSekolah", e.target.value)}/></div>
+            <div className="field"><label>Nama Kepala Sekolah</label><input className="input" value={form.namaKepsek} onChange={e=>updateField("namaKepsek", e.target.value)}/></div>
+            <div className="field"><label>NIP Kepala Sekolah <span className="opt">(opsional)</span></label><input className="input" value={form.nipKepsek} onChange={e=>updateField("nipKepsek", e.target.value)}/></div>
+            <div className={"field" + (fieldErrors.mapel?" invalid":"")}>
+              <label>Mata Pelajaran <span className="req">*</span></label>
+              <input className="input" value={form.mapel} onChange={e=>updateField("mapel", e.target.value)} placeholder="Mis. IPAS, Matematika, Produktif TKJ"/>
+              {fieldErrors.mapel && <span className="field-error-text">{fieldErrors.mapel}</span>}
+            </div>
+            <div className="field"><label>Konsentrasi Keahlian (SMK) <span className="opt">(opsional)</span></label><input className="input" value={form.konsentrasi} onChange={e=>updateField("konsentrasi", e.target.value)}/></div>
+            <div className="field">
+              <label>Fase</label>
+              <select className="input" value={form.fase} onChange={e=>updateField("fase", e.target.value)}>
+                <option value="">Pilih fase...</option>
+                {FASE_OPTIONS.map(o=>(<option key={o.v} value={o.v}>{o.l}</option>))}
+              </select>
+            </div>
+            <div className="field"><label>Kelas</label><input className="input" value={form.kelas} onChange={e=>updateField("kelas", e.target.value)} placeholder="Mis. X.1"/></div>
+            <div className="field">
+              <label>Semester</label>
+              <select className="input" value={form.semester} onChange={e=>updateField("semester", e.target.value)}>
+                <option>Ganjil</option><option>Genap</option>
+              </select>
+            </div>
+            <div className="field"><label>Tahun Pelajaran</label><input className="input" value={form.tahunPelajaran} onChange={e=>updateField("tahunPelajaran", e.target.value)} placeholder="2025/2026"/></div>
+          </div>
+        </div>
+
+        {/* SECTION 2 */}
+        <div className="card section-card">
+          <div className="section-head">
+            <div className="section-num">2</div>
+            <div style={{flex:1}}>
+              <div className="section-title-row">
+                <div className="section-title">Desain Pembelajaran</div>
+                <div className={"section-status " + (completion.sec2?"ok":"warn")}>{completion.sec2?"✓ Lengkap":"Perlu dilengkapi"}</div>
+              </div>
+              <div className="section-desc">Tujuan, model, metode, dan konteks pembelajaran.</div>
+            </div>
+          </div>
+          <div className="grid2">
+            
+            {/* LLM Powered Feature 1: Saran TP Otomatis */}
+            <div className={"field full" + (fieldErrors.tp?" invalid":"")}>
+              <label>Tujuan Pembelajaran (TP) <span className="req">*</span><span className="charcount">{form.tp.length} karakter</span></label>
+              <textarea value={form.tp} onChange={e=>updateField("tp", e.target.value)} placeholder="Tuliskan tujuan spesifik, contoh: Peserta didik mampu menganalisis dampak perubahan iklim..."/>
+              <div style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+                {fieldErrors.tp ? <span className="field-error-text">{fieldErrors.tp}</span> : <span className="hint">Minimal 10 karakter.</span>}
+                <button type="button" className="btn sm ghost" style={{padding:'5px 10px', color:'var(--violet-600)'}} onClick={handleSuggestTP} disabled={isGeneratingTP}>
+                  {isGeneratingTP ? "⏳ Menyusun..." : "✨ Saran TP Otomatis"}
+                </button>
+              </div>
+            </div>
+
+            <div className={"field" + (fieldErrors.topik?" invalid":"")}>
+              <label>Topik / Materi Pokok <span className="req">*</span></label>
+              <input className="input" value={form.topik} onChange={e=>updateField("topik", e.target.value)}/>
+              {fieldErrors.topik && <span className="field-error-text">{fieldErrors.topik}</span>}
+            </div>
+            <div className="field"><label>Elemen CP</label><input className="input" value={form.elemenCP} onChange={e=>updateField("elemenCP", e.target.value)}/></div>
+            <div className="field">
+              <label>Model Pembelajaran Utama</label>
+              <select className="input" value={form.model} onChange={e=>updateField("model", e.target.value)}>
+                <option value="">Pilih model...</option>
+                {MODEL_OPTIONS.map(o=>(<option key={o} value={o}>{o}</option>))}
+              </select>
+            </div>
+            <div className="field full">
+              <label>Alokasi Waktu</label>
+              <div className="alokasi-grid">
+                <div className="field">
+                  <label className="opt">Jumlah JP</label>
+                  <select className="input" value={form.jpJumlah} onChange={e=>updateField("jpJumlah", e.target.value)}>
+                    {JP_JUMLAH_OPTIONS.map(o=>(<option key={o} value={o}>{o} JP</option>))}
+                  </select>
+                </div>
+                <div className="field">
+                  <label className="opt">Waktu per JP</label>
+                  <select className="input" value={form.jpMenit} onChange={e=>updateField("jpMenit", e.target.value)}>
+                    {JP_MENIT_OPTIONS.map(o=>(<option key={o} value={o}>{o} menit</option>))}
+                  </select>
+                </div>
+                <div className={"field" + (fieldErrors.jumlahPertemuan?" invalid":"")}>
+                  <label className="opt">Jumlah Pertemuan</label>
+                  <input className="input" type="number" min="1" value={form.jumlahPertemuan} onChange={e=>updateField("jumlahPertemuan", e.target.value)} title="Jumlah pertemuan"/>
+                  {fieldErrors.jumlahPertemuan && <span className="field-error-text">{fieldErrors.jumlahPertemuan}</span>}
+                </div>
+              </div>
+              <div className="hint">Total ±{(parseInt(form.jpJumlah,10)||0)*(parseInt(form.jpMenit,10)||0)*(parseInt(form.jumlahPertemuan,10)||0)} menit ({form.jpJumlah} JP × {form.jpMenit} menit × {form.jumlahPertemuan||0} pertemuan)</div>
+            </div>
+
+            <div className="field full">
+              <label>Metode Pembelajaran</label>
+              <div className="check-grid c3">
+                {METODE_OPTIONS.map(m=>(<CheckChip key={m} label={m} checked={form.metode.includes(m)} onClick={()=>toggleInList("metode", m)}/>))}
+              </div>
+            </div>
+
+            <div className={"field full" + (fieldErrors.dimensi?" invalid":"")}>
+              <label>8 Dimensi Profil Lulusan <span className="req">*</span> <span className="opt">(pilih minimal 1)</span></label>
+              <div className="check-grid c2">
+                {DIMENSI_OPTIONS.map(m=>(<CheckChip key={m} label={m} checked={form.dimensi.includes(m)} onClick={()=>toggleInList("dimensi", m)}/>))}
+              </div>
+              {fieldErrors.dimensi && <span className="field-error-text">{fieldErrors.dimensi}</span>}
+            </div>
+
+            <div className="field full">
+              <label>Lingkungan Pembelajaran</label>
+              <div className="check-grid c3">
+                {LINGKUNGAN_OPTIONS.map(m=>(<CheckChip key={m} label={m} checked={form.lingkungan.includes(m)} onClick={()=>toggleInList("lingkungan", m)}/>))}
+              </div>
+            </div>
+
+            <div className="field full">
+              <label>Media &amp; Alat</label>
+              <div className="check-grid c3">
+                {MEDIA_OPTIONS.map(m=>(<CheckChip key={m} label={m} checked={form.media.includes(m)} onClick={()=>toggleInList("media", m)}/>))}
+              </div>
+            </div>
+
+            <div className="field"><label>Kesiapan &amp; Karakteristik Murid</label>
+              <textarea value={form.karakteristikMurid} onChange={e=>updateField("karakteristikMurid", e.target.value)} placeholder="Sebagian besar gaya belajar visual, menyukai studi kasus dunia nyata..."/></div>
+            <div className="field"><label>Sarana &amp; Prasarana Sekolah</label>
+              <textarea value={form.sarana} onChange={e=>updateField("sarana", e.target.value)} placeholder="Proyektor, internet 50Mbps, lab komputer..."/></div>
+          </div>
+        </div>
+
+        {/* SECTION 3 */}
+        <div className="card section-card">
+          <div className="section-head">
+            <div className="section-num">3</div>
+            <div style={{flex:1, display:"flex", alignItems:"flex-start", gap:10}}>
+              <div style={{flex:1}}>
+                <div className="section-title-row">
+                  <div className="section-title">Output yang Dihasilkan</div>
+                </div>
+                <div className="section-desc">Pilih dokumen yang ingin dibuat — semua akan saling terintegrasi. <span className="req">*minimal 1</span></div>
+              </div>
+              <div className="output-count-pill">{outputs.length} dokumen dipilih</div>
+            </div>
+          </div>
+          <div className="output-grid">
+            {OUTPUT_DOCS.map(d=>(
+              <div key={d.key} className={"output-card" + (outputs.includes(d.key)?" active":"")} onClick={()=>toggleOutput(d.key)}>
+                <div className="output-check">✓</div>
+                <div className="output-icon" style={outputs.includes(d.key)?{background:d.color, color:"#fff"}:{background:d.color+"22", color:d.color}}>{d.icon}</div>
+                <div className="output-name">{d.name}</div>
+                <div className="output-desc">{d.desc}</div>
+              </div>
+            ))}
+          </div>
+          {fieldErrors.outputs && <div className="field-error-text" style={{marginTop:10}}>{fieldErrors.outputs}</div>}
+        </div>
+
+        {/* SECTION 4 */}
+        <div className="card section-card">
+          <div className="section-head">
+            <div className="section-num">4</div>
+            <div>
+              <div className="section-title">Prompt Tambahan &amp; Bahan Referensi</div>
+              <div className="section-desc">Opsional — bantu AI membuat hasil lebih spesifik.</div>
+            </div>
+          </div>
+          <div className="field full" style={{marginBottom:16}}>
+            <label>Upload Bahan Referensi/Materi <span className="opt">(opsional, PDF/TXT/MD, maks 50MB)</span></label>
+            <div className={"upload-zone" + (dragOver?" drag":"") + (fileReading?" reading":"")}
+              onDragOver={e=>{e.preventDefault(); setDragOver(true);}}
+              onDragLeave={()=>setDragOver(false)}
+              onDrop={e=>{e.preventDefault(); setDragOver(false); handleFile(e.dataTransfer.files[0]);}}
+              onClick={()=>document.getElementById("fileInput").click()}>
+              <div style={{fontSize:24}}>{fileReading ? "⏳" : "📎"}</div>
+              <div style={{fontSize:13, fontWeight:700, marginTop:6}}>{fileReading ? "Membaca file..." : "Klik atau seret file ke sini"}</div>
+              <div className="hint">AI akan menggunakan dokumen ini sebagai dasar materi &amp; soal</div>
+              <input id="fileInput" type="file" accept=".pdf,.txt,.md" onChange={e=>handleFile(e.target.files[0])}/>
+              {fileReading && (
+                <div className="file-progress-track"><div className="file-progress-fill" style={{width:"70%"}}></div></div>
+              )}
+              {file && !fileReading && (
+                <div className="file-chip">
+                  📄 {file.name}
+                  <button onClick={(e)=>{e.stopPropagation(); removeFile();}}>✕</button>
+                </div>
+              )}
+              {file && !fileReading && (
+                <div className="file-meta">{formatBytes(file.size)} {fileTextExtract && `· ${fileTextExtract.length.toLocaleString("id-ID")} karakter terbaca`} {fileBase64 && "· dikirim langsung sebagai PDF ke model"}</div>
+              )}
+            </div>
+            {fileError && <div className="field-error-text" style={{marginTop:8}}>{fileError}</div>}
+          </div>
+          
+          {/* LLM Powered Feature 2: Saran Instruksi Khusus */}
+          <div className="field full">
+            <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', flexWrap:'wrap'}}>
+              <label>Instruksi Khusus kepada AI</label>
+              <button type="button" className="btn sm ghost" style={{padding:'5px 10px', color:'var(--violet-600)', margin:'-4px 0 4px'}} onClick={handleSuggestInstruksi} disabled={isGeneratingInstruksi}>
+                {isGeneratingInstruksi ? "⏳ Memikirkan..." : "✨ Saran Instruksi Khusus"}
+              </button>
+            </div>
+            <textarea value={form.instruksiKhusus} onChange={e=>updateField("instruksiKhusus", e.target.value)} placeholder="Misalnya: sisipkan wawasan teknologi terkini, gunakan studi kasus lokal, dll."/>
+          </div>
+        </div>
+
+        <div className="gen-row">
+          <button className="preview-btn" onClick={()=>setShowPreview(true)}><IconEye/> Preview Prompt</button>
+          
+          {/* LLM Powered Feature 3: AI Review Draft */}
+          <button className="preview-btn" onClick={handleAIReview} disabled={isReviewing}>
+            {isReviewing ? <span className="spinner" style={{marginRight:8}}></span> : <span style={{marginRight:6}}>✨</span>} AI Review Draft
+          </button>
+          
+          <button className={"gen-btn" + (isGenerating?" loading":"")} disabled={isGenerating} onClick={handleGenerate}>
+            {isGenerating ? (<React.Fragment><span className="spinner"></span> Menyusun perangkat ajar...</React.Fragment>) : (<React.Fragment>✨ Generate Perangkat Ajar</React.Fragment>)}
+          </button>
+        </div>
+
+        {isGenerating && (
+          <div className="skeleton-wrap">
+            <div className="progress-bar-outer"><div className="progress-bar-inner" style={{width:progressPct+"%"}}></div></div>
+            <div className="progress-text"><span className="spinner"></span>{steps[progressIdx]}</div>
+            <div className="progress-elapsed">⏱ {elapsed} detik berjalan</div>
+            {retryNote && <div className="warn-box retry-note">🔄 {retryNote}</div>}
+            <div className="progress-steps-list">
+              {steps.map((s,i)=>(
+                <div key={i} className={"progress-step-row" + (i<progressIdx?" done":"") + (i===progressIdx?" active":"")}>
+                  <span className="dot">{i<progressIdx?"✓":""}</span>
+                  <span>{s}</span>
+                </div>
+              ))}
+            </div>
+            <div className="sk-line" style={{width:"92%"}}></div>
+            <div className="sk-line" style={{width:"78%"}}></div>
+          </div>
+        )}
+
+        {results && !isGenerating && (
+          <div className="results-wrap">
+            <div className="results-badges">
+              <div className="pill"><i style={{background:"var(--mindful)"}}></i>Berkesadaran</div>
+              <div className="pill"><i style={{background:"var(--meaning)"}}></i>Bermakna</div>
+              <div className="pill"><i style={{background:"var(--joy)"}}></i>Menggembirakan</div>
+              <div className="spacer"></div>
+              <button className="tool-btn" onClick={downloadAllDoc}><IconStack/>Export Semua (1 File Word)</button>
+            </div>
+            <div className="tabs">
+              {outputs.map(k=>(
+                <button key={k} className={"tab"+(activeTab===k?" active":"")} onClick={()=>setActiveTab(k)}>
+                  {parseMeta[k] && parseMeta[k]!=="exact" && <span className="tab-warn-dot" title="Dipisahkan otomatis oleh parser cerdas"></span>}
+                  {DOC_LABEL[k]}
+                </button>
+              ))}
+            </div>
+            <div className="tab-panel">
+              {outputs.map(k=> activeTab===k && (
+                <div key={k}>
+                  {parseMeta[k] && parseMeta[k]!=="exact" && parseMeta[k]!=="missing" && (
+                    <div className="parse-warn-note">⚠️ Dokumen ini dipisahkan otomatis oleh parser cerdas (penanda dari AI tidak lengkap). Periksa kembali batas kontennya.</div>
+                  )}
+                  {parseMeta[k]==="missing" && (
+                    <div className="parse-warn-note">⚠️ Konten untuk dokumen ini tidak ditemukan dalam respons AI. Coba tombol "Regenerate bagian ini".</div>
+                  )}
+                  <div className="tab-toolbar">
+                    <button className="tool-btn" onClick={()=>copyText(results[k]||"")} disabled={!results[k]}><IconCopy/>Salin</button>
+                    <button className="tool-btn" onClick={()=>downloadMd(k, results[k]||"")} disabled={!results[k]}><IconDownload/>.md</button>
+                    <button className="tool-btn" onClick={()=>downloadDoc(k, results[k]||"")} disabled={!results[k]}><IconDownload/>.doc</button>
+                    <button className="tool-btn" onClick={()=>handleRegenerate(k)} disabled={regenKey===k}>
+                      {regenKey===k ? <span className="spinner"></span> : <IconRefresh/>}
+                      {regenKey===k ? "Membuat ulang..." : "Regenerate bagian ini"}
+                    </button>
+                  </div>
+                  {results[k] ? (
+                    <div className="doc-content" dangerouslySetInnerHTML={{__html: buildKopHtml(form, DOC_LABEL[k], false) + renderMd(results[k])}}></div>
+                  ) : (
+                    <div className="hint">Belum ada konten untuk dokumen ini.</div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div className="footer-note">Dibangun sesuai kerangka Pembelajaran Mendalam — Permendikdasmen No. 13/2025 · Ditenagai oleh Gemini API (BYOK)</div>
+        <div className="footer-note" style={{marginTop:6}}>Made with <span style={{background:"linear-gradient(135deg, var(--violet-500), var(--indigo-500))", WebkitBackgroundClip:"text", backgroundClip:"text", color:"transparent"}}>♥</span> by Burhanudin, S.Kom - Skanetra Jawara</div>
+      </div>
+
+      {showSettings && (
+        <div className="modal-backdrop" onClick={()=>setShowSettings(false)}>
+          <div className="modal" onClick={e=>e.stopPropagation()}>
+            <button className="modal-close" onClick={()=>setShowSettings(false)}>✕</button>
+            <h3>Pengaturan</h3>
+            <p className="hint" style={{marginBottom:16}}>Kunci disimpan hanya di penyimpanan lokal browser ini (tidak dikirim ke mana pun selain langsung ke Google saat generate).</p>
+            <div className="field" style={{marginBottom:14}}>
+              <label>API Key Gemini Anda</label>
+              <div className="pw-wrap">
+                <input className="input" type={showKey?"text":"password"} value={tempKey} onChange={e=>setTempKey(e.target.value)} placeholder="AQ.Ab... (format baru)" autoFocus/>
+                <button className="pw-toggle" onClick={()=>setShowKey(s=>!s)}>{showKey?"🙈":"👁️"}</button>
+              </div>
+              <div className="hint">Belum punya key? Dapatkan gratis di <a className="link" href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer">Google AI Studio</a>. Sejak pertengahan 2026 Google menerbitkan key format baru berawalan <b>AQ.</b> (menggantikan format lama <b>AIza...</b>) — tempel apa adanya, key lama maupun baru sama-sama didukung di sini.</div>
+            </div>
+            <div className="field">
+              <label>Model Gemini</label>
+              <select className="input" value={tempModel} onChange={e=>setTempModel(e.target.value)}>
+                <optgroup label="Gratis">
+                  {GEMINI_MODEL_CHOICES.filter(m=>m.tier==="free").map(m=>(<option key={m.value} value={m.value}>{m.label}</option>))}
+                </optgroup>
+                <optgroup label="Berbayar">
+                  {GEMINI_MODEL_CHOICES.filter(m=>m.tier==="pro").map(m=>(<option key={m.value} value={m.value}>{m.label}</option>))}
+                </optgroup>
+              </select>
+            </div>
+            <div className="modal-actions">
+              <button className="btn ghost" onClick={()=>setShowSettings(false)}>Batal</button>
+              <button className="btn primary" onClick={saveSettings}>Simpan</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Review Draft */}
+      {showReviewModal && (
+        <div className="modal-backdrop" onClick={()=>setShowReviewModal(false)}>
+          <div className="modal wide" onClick={e=>e.stopPropagation()}>
+            <button className="modal-close" onClick={()=>setShowReviewModal(false)}>✕</button>
+            <h3 style={{display:'flex', alignItems:'center', gap:8}}>✨ Review Rancangan Pembelajaran</h3>
+            <p className="hint" style={{marginBottom:16}}>Saran instan dari AI sebelum Anda men-generate dokumen penuh.</p>
+            <div className="doc-content prompt-pre" style={{background:'var(--violet-50)'}} dangerouslySetInnerHTML={{__html: renderMd(reviewResult)}}></div>
+            <div className="modal-actions" style={{justifyContent:'flex-end'}}>
+              <button className="btn primary" onClick={()=>setShowReviewModal(false)}>Tutup & Lanjutkan</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showHistory && (
+        <div className="modal-backdrop" onClick={()=>setShowHistory(false)}>
+          <div className="modal" onClick={e=>e.stopPropagation()}>
+            <button className="modal-close" onClick={()=>setShowHistory(false)}>✕</button>
+            <h3>Riwayat Generate</h3>
+            <p className="hint" style={{marginBottom:16}}>Klik salah satu untuk memuat ulang hasilnya.</p>
+            {history.length===0 ? (
+              <div className="hist-empty">Belum ada riwayat generate.</div>
+            ) : history.map(h=>(
+              <div key={h.id} className="hist-item" onClick={()=>loadHistory(h)}>
+                <div>
+                  <div className="hist-title">{h.title}</div>
+                  <div className="hist-time">{h.timestamp}</div>
+                </div>
+                <button className="hist-del" title="Hapus" onClick={(e)=>deleteHistory(h.id, e)}>✕</button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <PromptPreviewModal
+        open={showPreview}
+        onClose={()=>setShowPreview(false)}
+        systemText={buildSystemInstruction()}
+        userText={buildUserPrompt(form, outputs.length?outputs:["modul"], fileTextExtract, file?file.name:null)}
+        onCopy={copyText}
+      />
+
+      <Toast message={toast}/>
+    </React.Fragment>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>
