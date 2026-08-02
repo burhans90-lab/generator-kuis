@@ -1,1 +1,1492 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Generator Kuis Interaktif AI – Gemini</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Boogaloo&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Nunito',sans-serif;background:linear-gradient(160deg,#f0f6ff 0%,#eef2ff 55%,#f0f6ff 100%);min-height:100vh;color:#1e1b4b}
+button{font-family:'Nunito',sans-serif;cursor:pointer;border:none;outline:none}
+input,select,textarea{font-family:'Nunito',sans-serif}
+code,.mono{font-family:'Fira Code',monospace}
 
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes popIn{0%{opacity:0;transform:scale(.85)}100%{opacity:1;transform:scale(1)}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+
+.wrap{max-width:760px;margin:0 auto;padding:24px 16px 60px}
+
+/* Hero */
+.hero{text-align:center;margin-bottom:26px;animation:fadeUp .5s ease}
+.hero-icon{font-size:48px;display:block;margin-bottom:8px}
+.hero-title{font-family:'Boogaloo',cursive;font-size:clamp(26px,6vw,40px);background:linear-gradient(135deg,#1d4ed8,#7c3aed,#0891b2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;display:block;margin-bottom:6px}
+.hero-sub{color:#4b5563;font-size:14px;font-weight:600}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:#ede9fe;color:#5b21b6;border:1.5px solid #c4b5fd;border-radius:20px;padding:4px 14px;font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;margin-top:10px}
+
+/* Cards */
+.card{background:#fff;border:1.5px solid #e0e7ff;border-radius:20px;padding:22px;margin-bottom:16px;box-shadow:0 2px 16px rgba(37,99,235,.07);animation:fadeUp .45s ease}
+.card-head{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.card-num{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#2563eb,#4f46e5);color:#fff;font-weight:900;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.card-title{font-size:16px;font-weight:900;color:#1e1b4b}
+.card-desc{font-size:12px;color:#6b7280;margin-top:2px}
+
+/* Form fields */
+.field{margin-bottom:14px}
+.field:last-child{margin-bottom:0}
+.field-label{font-size:13px;font-weight:800;color:#374151;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.field-label .opt{font-weight:700;color:#9ca3af;font-size:11px;text-transform:none}
+.field-input{width:100%;border:2px solid #e0e7ff;border-radius:12px;padding:12px 14px;font-size:14px;font-weight:600;color:#1e1b4b;outline:none;transition:border-color .2s;background:#fff}
+.field-input:focus{border-color:#4f46e5}
+.field-hint{font-size:11px;color:#9ca3af;margin-top:5px;line-height:1.5}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+@media(max-width:560px){.grid-2,.grid-3{grid-template-columns:1fr}}
+
+/* Radio option cards */
+.opt-radio-row{display:flex;flex-direction:column;gap:8px}
+.opt-radio{display:flex;align-items:flex-start;gap:10px;border:2px solid #e0e7ff;border-radius:12px;padding:11px 14px;cursor:pointer;transition:all .18s}
+.opt-radio:hover{border-color:#93c5fd;background:#f8faff}
+.opt-radio.checked{border-color:#4f46e5;background:#eef2ff}
+.opt-radio input{margin-top:3px;accent-color:#4f46e5;flex-shrink:0}
+.opt-radio-label{font-size:13px;font-weight:800;color:#1e1b4b}
+.opt-radio-desc{font-size:11.5px;color:#6b7280;margin-top:1px}
+
+/* Dropzone */
+.dropzone{border:2px dashed #c7d2fe;border-radius:14px;padding:20px;text-align:center;cursor:pointer;transition:all .2s;background:#f8faff;margin-top:10px}
+.dropzone:hover,.dropzone.drag{border-color:#4f46e5;background:#eef2ff}
+.dropzone-icon{font-size:26px;display:block;margin-bottom:6px}
+.dropzone-text{font-size:13px;font-weight:700;color:#374151}
+.dropzone-sub{font-size:11px;color:#9ca3af;margin-top:3px}
+.file-chip{display:flex;align-items:center;gap:10px;background:#f0fdf4;border:1.5px solid #86efac;border-radius:12px;padding:10px 14px;margin-top:10px}
+.file-chip-icon{font-size:18px}
+.file-chip-name{font-size:12.5px;font-weight:800;color:#15803d;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.file-chip-remove{background:#fff;border:1px solid #86efac;border-radius:50%;width:22px;height:22px;color:#15803d;font-weight:900;font-size:12px;flex-shrink:0}
+.material-preview{margin-top:10px;background:#f8faff;border:1.5px solid #e0e7ff;border-radius:12px;padding:10px 12px;max-height:110px;overflow-y:auto;font-size:11.5px;color:#4b5563;line-height:1.6;white-space:pre-wrap}
+
+/* API key */
+.key-row{position:relative}
+.key-toggle{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;font-size:15px;color:#6b7280;padding:4px}
+.checkbox-row{display:flex;align-items:center;gap:8px;margin-top:10px}
+.checkbox-row input{accent-color:#4f46e5;width:16px;height:16px}
+.checkbox-row label{font-size:12px;color:#6b7280;font-weight:600}
+.api-link{color:#4f46e5;font-weight:800;text-decoration:underline}
+
+/* Buttons */
+.btn-primary{width:100%;background:linear-gradient(135deg,#2563eb,#4f46e5);border-radius:14px;padding:16px;color:#fff;font-weight:900;font-size:16px;box-shadow:0 4px 16px rgba(37,99,235,.28);transition:opacity .2s,transform .15s}
+.btn-primary:hover:not(:disabled){transform:translateY(-1px)}
+.btn-primary:disabled{opacity:.45;cursor:not-allowed}
+.btn-secondary{background:#fff;border:2px solid #c7d2fe;border-radius:12px;padding:12px;color:#3730a3;font-weight:800;font-size:13px;width:100%}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap}
+.btn-row>*{flex:1;min-width:140px}
+
+/* Status card */
+.step-list{display:flex;flex-direction:column;gap:10px;margin-bottom:6px}
+.step-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:12px;background:#f8faff;border:1.5px solid #eef2ff;transition:all .2s}
+.step-item.active{background:#eff6ff;border-color:#93c5fd}
+.step-item.done{background:#f0fdf4;border-color:#86efac}
+.step-item.error{background:#fff5f5;border-color:#fca5a5}
+.step-icon{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;flex-shrink:0;background:#e5e7eb;color:#9ca3af}
+.step-item.active .step-icon{background:#2563eb;color:#fff}
+.step-item.active .step-icon .spinner{width:12px;height:12px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+.step-item.done .step-icon{background:#16a34a;color:#fff}
+.step-item.error .step-icon{background:#ef4444;color:#fff}
+.step-text{font-size:13px;font-weight:700;color:#374151}
+.step-item.done .step-text{color:#15803d}
+.step-item.error .step-text{color:#991b1b}
+.error-box{background:#fff5f5;border:1.5px solid #fca5a5;border-radius:12px;padding:14px;margin-top:10px;animation:shake .35s ease}
+.error-title{font-size:13px;font-weight:900;color:#991b1b;margin-bottom:4px}
+.error-detail{font-size:12px;color:#991b1b;line-height:1.6;font-family:'Fira Code',monospace;white-space:pre-wrap;word-break:break-word}
+
+/* Result card */
+.result-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
+.result-stat{background:#f8faff;border:1px solid #e0e7ff;border-radius:12px;padding:10px;text-align:center}
+.result-stat-val{font-size:18px;font-weight:900;color:#1e1b4b}
+.result-stat-label{font-size:9.5px;color:#6b7280;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+@media(max-width:560px){.result-summary{grid-template-columns:repeat(2,1fr)}}
+.preview-frame-wrap{border:2px solid #e0e7ff;border-radius:16px;overflow:hidden;margin-bottom:16px;box-shadow:0 2px 12px rgba(0,0,0,.06)}
+.preview-frame-bar{background:#1e293b;padding:8px 14px;display:flex;align-items:center;gap:8px}
+.preview-dot{width:9px;height:9px;border-radius:50%}
+.preview-frame-label{color:#94a3b8;font-size:11px;font-weight:700;margin-left:6px;font-family:'Fira Code',monospace}
+#previewFrame{width:100%;height:640px;border:none;display:block;background:#f0f6ff}
+
+.materi-toggle{background:none;border:none;color:#4f46e5;font-size:12px;font-weight:800;text-decoration:underline;padding:2px 0}
+
+.footer-note{text-align:center;font-size:11.5px;color:#9ca3af;margin-top:20px;line-height:1.7}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <span class="hero-icon">🤖✨</span>
+    <span class="hero-title">Generator Kuis Interaktif AI</span>
+    <div class="hero-sub">Buat kuis HTML siap pakai dari materi ajar apa pun, dalam hitungan menit</div>
+    <div class="hero-badge">⚡ Didukung Google Gemini</div>
+  </div>
+
+  <!-- CARD 1: Informasi Kuis -->
+  <div class="card">
+    <div class="card-head">
+      <div class="card-num">1</div>
+      <div>
+        <div class="card-title">Informasi Kuis</div>
+        <div class="card-desc">Data ini akan tampil di judul dan sertifikat hasil kuis</div>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="field">
+        <label class="field-label">Nama Guru</label>
+        <input class="field-input" id="teacherName" type="text" placeholder="Cth: Burhanudin, S.Kom." maxlength="60"/>
+      </div>
+      <div class="field">
+        <label class="field-label">Nama Sekolah <span class="opt">(opsional)</span></label>
+        <input class="field-input" id="schoolName" type="text" placeholder="Cth: SMK Negeri Situraja" maxlength="80"/>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="field">
+        <label class="field-label">Mata Pelajaran / Topik</label>
+        <input class="field-input" id="subject" type="text" placeholder="Cth: Wawasan Dunia Kerja PPLG" maxlength="80"/>
+      </div>
+      <div class="field">
+        <label class="field-label">Kelas</label>
+        <input class="field-input" id="className" type="text" placeholder="Cth: X PPLG" maxlength="40"/>
+      </div>
+    </div>
+  </div>
+
+  <!-- CARD 2: Materi Referensi -->
+  <div class="card">
+    <div class="card-head">
+      <div class="card-num">2</div>
+      <div>
+        <div class="card-title">Materi Referensi <span class="opt" style="font-weight:700">(opsional)</span></div>
+        <div class="card-desc">Jadi acuan AI supaya soal sesuai dengan yang diajarkan</div>
+      </div>
+    </div>
+    <div class="opt-radio-row" id="matSourceRow">
+      <label class="opt-radio checked" data-val="upload">
+        <input type="radio" name="matSource" value="upload" checked/>
+        <div>
+          <div class="opt-radio-label">📄 Upload materi sendiri</div>
+          <div class="opt-radio-desc">PDF, Word (.docx), atau teks (.txt/.md) — paling akurat sesuai bahan ajarmu</div>
+        </div>
+      </label>
+      <label class="opt-radio" data-val="search">
+        <input type="radio" name="matSource" value="search"/>
+        <div>
+          <div class="opt-radio-label">🔎 AI cari & rangkum materi</div>
+          <div class="opt-radio-desc">Gemini mencari referensi terkini tentang topik di atas lewat Google Search</div>
+        </div>
+      </label>
+      <label class="opt-radio" data-val="knowledge">
+        <input type="radio" name="matSource" value="knowledge"/>
+        <div>
+          <div class="opt-radio-label">🧠 Langsung dari pengetahuan AI</div>
+          <div class="opt-radio-desc">Tanpa pencarian — lebih cepat, mengandalkan pengetahuan umum Gemini</div>
+        </div>
+      </label>
+    </div>
+
+    <div id="uploadArea">
+      <div class="dropzone" id="dropzone">
+        <span class="dropzone-icon">📎</span>
+        <div class="dropzone-text">Klik atau seret file ke sini</div>
+        <div class="dropzone-sub">.pdf · .docx · .txt · .md (maks ±15 MB)</div>
+      </div>
+      <input type="file" id="fileInput" accept=".pdf,.docx,.txt,.md" style="display:none"/>
+      <div id="fileChip" style="display:none"></div>
+      <div id="materialPreviewWrap" style="display:none">
+        <button class="materi-toggle" id="togglePreview" type="button">👁️ Lihat teks yang berhasil diekstrak</button>
+        <div class="material-preview" id="materialPreview" style="display:none"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CARD 3: Jumlah Soal -->
+  <div class="card">
+    <div class="card-head">
+      <div class="card-num">3</div>
+      <div>
+        <div class="card-title">Jumlah Soal Mode Ujian per Tingkat</div>
+        <div class="card-desc">Isi 0 jika tidak ingin menampilkan tingkat tersebut. Mode Latihan otomatis memakai sebagian dari jumlah ini.</div>
+      </div>
+    </div>
+    <div class="grid-3">
+      <div class="field">
+        <label class="field-label">📝 Mudah</label>
+        <input class="field-input" id="countMudah" type="number" min="0" max="60" value="5"/>
+      </div>
+      <div class="field">
+        <label class="field-label">⚙️ Sedang</label>
+        <input class="field-input" id="countSedang" type="number" min="0" max="60" value="5"/>
+      </div>
+      <div class="field">
+        <label class="field-label">🚀 Sulit</label>
+        <input class="field-input" id="countSulit" type="number" min="0" max="60" value="5"/>
+      </div>
+    </div>
+    <div class="field-hint" style="margin-bottom:14px">Batas per tingkat 60 soal (bisa diketik manual lebih dari itu). Semakin banyak soal, semakin lama & besar kemungkinan gagal karena batas ukuran respons AI — disarankan total tetap di bawah ±60 soal sekali generate.</div>
+
+    <div class="grid-2">
+      <div class="field">
+        <label class="field-label">Soal Latihan dari Ujian <span class="opt">(%)</span></label>
+        <input class="field-input" id="practiceRatioPct" type="number" min="10" max="100" value="75"/>
+        <div class="field-hint">Cth: 75% dari 8 soal ujian → 6 soal latihan (dipilih acak setiap kali dicoba).</div>
+      </div>
+      <div class="field">
+        <label class="field-label">Kode Akses Mode Ujian <span class="opt">(opsional)</span></label>
+        <input class="field-input" id="examToken" type="text" placeholder="Cth: UJIAN2025" maxlength="60"/>
+        <div class="field-hint">Jika diisi, siswa wajib memasukkan kode ini sebelum mulai Mode Ujian. Mode Latihan tidak memerlukannya.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CARD 4: Instruksi Khusus -->
+  <div class="card">
+    <div class="card-head">
+      <div class="card-num">4</div>
+      <div>
+        <div class="card-title">Instruksi Khusus untuk AI <span class="opt" style="font-weight:700">(opsional)</span></div>
+        <div class="card-desc">Beri arahan tambahan supaya gaya & isi soal sesuai keinginanmu</div>
+      </div>
+    </div>
+    <div class="field">
+      <textarea class="field-input" id="customInstructions" rows="4" style="resize:vertical;line-height:1.6" placeholder="Contoh: buat soal dengan gaya studi kasus/cerita, gunakan bahasa yang santai dan mudah dipahami, fokuskan soal sulit pada perhitungan, hindari soal tentang bab 3, sisipkan sedikit humor, dst."></textarea>
+      <div class="field-hint">Instruksi ini akan diikuti AI selama tidak bertentangan dengan format soal (4 pilihan ganda, 1 jawaban benar).</div>
+    </div>
+  </div>
+
+  <!-- CARD 5: API Key -->
+  <div class="card">
+    <div class="card-head">
+      <div class="card-num">5</div>
+      <div>
+        <div class="card-title">Gemini API Key</div>
+        <div class="card-desc">Dapatkan gratis di <a class="api-link" href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Google AI Studio ↗</a></div>
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label">API Key</label>
+      <div class="key-row">
+        <input class="field-input" id="apiKey" type="password" placeholder="AQ.Ab... (atau AIza... untuk key lama)" style="padding-right:42px"/>
+        <button class="key-toggle" id="toggleKeyBtn" type="button" title="Tampilkan/sembunyikan">👁️</button>
+      </div>
+      <div class="checkbox-row">
+        <input type="checkbox" id="rememberKey"/>
+        <label for="rememberKey">Ingat API key ini di browser saya (tersimpan lokal, tidak dikirim ke siapa pun selain Google)</label>
+      </div>
+      <div class="field-hint">Sejak pertengahan 2026 Google menerbitkan key baru berformat <code class="mono">AQ.Ab...</code> (dulu <code class="mono">AIza...</code>). Keduanya sama-sama bisa dipakai di sini — tinggal tempel apa pun yang diberikan Google AI Studio.</div>
+    </div>
+    <div class="field">
+      <label class="field-label">Model</label>
+      <select class="field-input" id="modelSelect">
+        <option value="gemini-3.5-flash-lite" selected>gemini-3.5-flash-lite — Cepat & hemat (disarankan)</option>
+        <option value="gemini-3.6-flash">gemini-3.6-flash — Kualitas terbaik, sedikit lebih lambat</option>
+        <option value="gemini-3.1-flash-lite">gemini-3.1-flash-lite — Alternatif jika model di atas gagal</option>
+        <option value="gemini-2.5-flash">gemini-2.5-flash — Model lama (mungkin tidak tersedia untuk API key baru)</option>
+        <option value="__custom__">✏️ Ketik nama model lain (manual)...</option>
+      </select>
+      <input class="field-input" id="modelCustomInput" type="text" placeholder="Ketik nama model, cth: gemini-3.7-flash" style="display:none;margin-top:8px"/>
+      <div class="field-hint">Google sering mengganti/menghentikan model lama untuk API key baru. Jika muncul error "model no longer available", coba ganti model di daftar ini.</div>
+    </div>
+  </div>
+
+  <button class="btn-primary" id="generateBtn">✨ Buat Kuis Sekarang</button>
+
+  <!-- STATUS CARD -->
+  <div class="card" id="statusCard" style="display:none;margin-top:16px">
+    <div class="card-head">
+      <div class="card-num">⏳</div>
+      <div>
+        <div class="card-title">Sedang Menyusun Kuis...</div>
+        <div class="card-desc">Mohon tunggu, jangan tutup halaman ini</div>
+      </div>
+    </div>
+    <div class="step-list" id="stepList"></div>
+    <div id="errorBox"></div>
+  </div>
+
+  <!-- RESULT CARD -->
+  <div class="card" id="resultCard" style="display:none;margin-top:16px">
+    <div class="card-head">
+      <div class="card-num">🎉</div>
+      <div>
+        <div class="card-title">Kuis Siap!</div>
+        <div class="card-desc" id="resultDesc"></div>
+      </div>
+    </div>
+    <div class="result-summary" id="resultSummary"></div>
+    <div class="preview-frame-wrap">
+      <div class="preview-frame-bar">
+        <span class="preview-dot" style="background:#ef4444"></span>
+        <span class="preview-dot" style="background:#f59e0b"></span>
+        <span class="preview-dot" style="background:#22c55e"></span>
+        <span class="preview-frame-label" id="previewLabel">preview.html</span>
+      </div>
+      <iframe id="previewFrame"></iframe>
+    </div>
+    <div class="btn-row" style="margin-bottom:10px">
+      <button class="btn-primary" id="downloadBtn" style="box-shadow:0 4px 16px rgba(37,99,235,.28)">⬇️ Download File HTML</button>
+      <button class="btn-secondary" id="openTabBtn">↗️ Buka di Tab Baru</button>
+    </div>
+    <button class="btn-secondary" id="resetBtn">🔄 Buat Kuis Baru</button>
+  </div>
+
+  <div class="footer-note">
+    API key kamu hanya dipakai langsung dari browser ini ke server Google — tidak pernah dikirim atau disimpan di server lain.<br/>
+    File kuis hasil generate 100% berdiri sendiri (tidak butuh internet/API key lagi setelah diunduh).
+  </div>
+
+</div>
+<script type="text/template" id="quiz-template">
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>__PAGE_TITLE__</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Boogaloo&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Nunito',sans-serif;background:#f0f6ff;min-height:100vh}
+button{font-family:'Nunito',sans-serif;cursor:pointer;border:none;outline:none}
+input{font-family:'Nunito',sans-serif}
+code,.mono{font-family:'Fira Code',monospace}
+
+@keyframes bgFloat{0%,100%{transform:translateY(0) rotate(0deg)}33%{transform:translateY(-24px) rotate(12deg)}66%{transform:translateY(-12px) rotate(-7deg)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes popIn{0%{opacity:0;transform:scale(.75)}70%{transform:scale(1.04)}100%{opacity:1;transform:scale(1)}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+@keyframes timerPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+@keyframes timerDanger{0%,100%{background:#fef2f2;border-color:#fca5a5}50%{background:#fee2e2;border-color:#ef4444}}
+@keyframes codeFly{0%{opacity:.9;transform:translateY(0) rotate(0deg)}100%{opacity:0;transform:translateY(-110vh) rotate(540deg)}}
+@keyframes badgePulse{0%,100%{box-shadow:0 0 0 0 rgba(37,99,235,.25)}50%{box-shadow:0 0 0 12px rgba(37,99,235,0)}}
+@keyframes progressShrink{from{width:100%}to{width:0%}}
+@keyframes slideIn{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}
+
+.screen{min-height:100vh;background:linear-gradient(160deg,#f0f6ff 0%,#eef2ff 60%,#f0f6ff 100%);padding:16px;position:relative;overflow:hidden}
+.bg-layer{position:absolute;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.bg-sym{position:absolute;opacity:.055;font-family:'Fira Code',monospace;font-weight:500;color:#1e40af}
+.inner{position:relative;z-index:1;max-width:580px;margin:0 auto}
+
+/* ── Name screen ── */
+.name-hero{text-align:center;margin-bottom:28px}
+.app-icon{font-size:52px;display:block;margin-bottom:10px}
+.app-title{font-family:'Boogaloo',cursive;font-size:clamp(22px,7vw,38px);line-height:1.15;background:linear-gradient(135deg,#1d4ed8,#7c3aed,#0891b2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;display:block;margin-bottom:4px}
+.app-sub{color:#1e40af;font-size:12px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase}
+.name-card{background:#fff;border:1.5px solid #e0e7ff;border-radius:20px;padding:28px;box-shadow:0 2px 16px rgba(37,99,235,.07);animation:fadeUp .5s ease}
+.name-label{font-size:14px;font-weight:700;color:#374151;margin-bottom:8px;display:block}
+.name-input{width:100%;border:2px solid #c7d2fe;border-radius:12px;padding:14px 16px;font-size:16px;font-weight:700;color:#1e1b4b;outline:none;transition:border-color .2s;background:#fff}
+.name-input:focus{border-color:#4f46e5}
+.name-input.error{border-color:#ef4444;animation:shake .35s ease}
+.err-msg{color:#ef4444;font-size:12px;font-weight:700;margin-top:6px;display:none}
+.mode-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.mode-btn{border-radius:14px;padding:16px 12px;border:2px solid;cursor:pointer;text-align:center;transition:all .22s;background:#fff}
+.mode-btn:hover{transform:translateY(-2px)}
+.mode-icon{font-size:28px;display:block;margin-bottom:6px}
+.mode-label{font-weight:800;font-size:14px}
+.mode-desc{font-size:11px;margin-top:3px;line-height:1.4}
+.next-btn{width:100%;background:linear-gradient(135deg,#2563eb,#4f46e5);border:none;border-radius:14px;padding:15px;color:#fff;font-weight:800;font-size:16px;cursor:pointer;box-shadow:0 4px 16px rgba(37,99,235,.28);margin-top:16px;transition:opacity .2s}
+.next-btn:disabled{opacity:.45;cursor:not-allowed}
+
+/* ── Diff select ── */
+.diff-card{background:#fff;border:1.5px solid #e0e7ff;border-radius:20px;padding:20px;box-shadow:0 2px 16px rgba(37,99,235,.07);animation:fadeUp .5s ease}
+.diff-row{display:flex;flex-direction:column;gap:10px}
+.diff-btn{background:#fff;border-radius:14px;padding:15px 18px;display:flex;align-items:center;gap:14px;transition:all .22s;box-shadow:0 2px 8px rgba(0,0,0,.05);text-align:left;width:100%;border:2px solid}
+.diff-btn:hover{transform:scale(1.02) translateX(2px)}
+.diff-icon{font-size:32px}
+.diff-label{font-weight:900;font-size:16px}
+.diff-desc{color:#6b7280;font-size:12px;margin-top:2px}
+.diff-arrow{margin-left:auto;font-size:18px;opacity:.3;transition:opacity .2s}
+.diff-btn:hover .diff-arrow{opacity:1}
+.back-link{color:#6b7280;font-size:13px;text-align:center;margin-top:14px;cursor:pointer;display:block;text-decoration:underline}
+
+/* ── Quiz ── */
+.topbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.pill{border-radius:20px;padding:5px 12px;font-size:12px;font-weight:800;white-space:nowrap}
+.student-pill{background:#ede9fe;color:#5b21b6;border:1.5px solid #c4b5fd}
+.mode-pill-latihan{background:#dcfce7;color:#15803d;border:1.5px solid #86efac}
+.mode-pill-ujian{background:#fef3c7;color:#92400e;border:1.5px solid #fcd34d}
+.score-pill{background:#dbeafe;color:#1e40af;border:1.5px solid #93c5fd}
+
+/* Timer */
+.timer-wrap{margin-bottom:10px}
+.timer-bar-bg{height:6px;background:#e0e7ff;border-radius:50px;overflow:hidden;margin-bottom:8px}
+.timer-bar-fill{height:100%;border-radius:50px;transition:width .1s linear}
+.timer-display{display:flex;align-items:center;justify-content:space-between}
+.timer-num{font-size:22px;font-weight:900;font-family:'Fira Code',monospace;min-width:40px;display:inline-block;text-align:center;transition:color .3s}
+.timer-num.danger{color:#dc2626;animation:timerPulse .5s ease infinite}
+.timer-num.normal{color:#2563eb}
+.timer-label{font-size:11px;color:#6b7280;font-weight:600}
+
+/* Progress */
+.prog-line{height:5px;background:#e0e7ff;border-radius:50px;overflow:hidden;margin-bottom:14px}
+.prog-fill{height:100%;border-radius:50px;background:linear-gradient(90deg,#2563eb,#818cf8);transition:width .4s ease}
+
+/* Compile bar */
+.compile-bar{display:flex;align-items:center;gap:12px;background:#fff;border-radius:50px;padding:7px 14px;border:1.5px solid #c7d2fe;box-shadow:0 1px 6px rgba(37,99,235,.07);margin-bottom:12px}
+.compile-emoji{font-size:24px}
+.compile-track{flex:1}
+.compile-fill-wrap{height:7px;background:#f1f5f9;border-radius:50px;overflow:hidden}
+.compile-fill{height:100%;background:linear-gradient(90deg,#2563eb,#818cf8);border-radius:50px;transition:width .6s ease}
+.compile-label{color:#3b5bdb;font-size:11px;margin-top:2px;font-weight:600}
+
+/* Question */
+.q-card{background:#fff;border:1.5px solid #e0e7ff;border-radius:18px;padding:18px 20px;margin-bottom:11px;box-shadow:0 2px 10px rgba(0,0,0,.04);animation:slideIn .3s ease}
+.q-topic{display:inline-flex;align-items:center;border-radius:20px;padding:3px 12px;font-size:12px;font-weight:800;margin-bottom:10px}
+.q-text{color:#1e1b4b;font-size:15px;line-height:1.7;font-weight:700}
+.q-code{background:#1e293b;border-radius:10px;padding:10px 14px;margin-top:10px;font-family:'Fira Code',monospace;font-size:12px;color:#e2e8f0;line-height:1.7;border:1px solid #334155;overflow-x:auto}
+.q-code .c-kw{color:#c792ea}.q-code .c-fn{color:#82aaff}.q-code .c-str{color:#c3e88d}.q-code .c-cm{color:#546e7a}.q-code .c-num{color:#f78c6c}.q-code .c-op{color:#89ddff}
+
+/* Options */
+.opts{display:flex;flex-direction:column;gap:8px;margin-bottom:11px}
+.opt-btn{background:#fff;border:2px solid #e0e7ff;border-radius:13px;padding:12px 15px;display:flex;align-items:center;gap:11px;text-align:left;width:100%;transition:all .2s;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.opt-btn:not(.answered):hover{border-color:#93c5fd;background:#eff6ff;transform:translateX(3px)}
+.opt-btn.answered{cursor:default}
+.opt-btn.correct{background:#f0fdf4;border-color:#16a34a;box-shadow:0 2px 10px rgba(22,163,74,.12)}
+.opt-btn.wrong{background:#fff5f5;border-color:#ef4444;animation:shake .35s ease}
+.opt-btn.dimmed{background:#fafafa;border-color:#f3f4f6}
+.opt-btn.timeout{background:#fef9c3;border-color:#ca8a04}
+.opt-circle{width:30px;height:30px;border-radius:50%;background:#eff6ff;display:flex;align-items:center;justify-content:center;color:#3b5bdb;font-weight:900;font-size:12px;flex-shrink:0;transition:all .2s}
+.opt-btn.correct .opt-circle{background:#16a34a;color:#fff}
+.opt-btn.wrong .opt-circle{background:#ef4444;color:#fff}
+.opt-btn.dimmed .opt-circle{background:#f3f4f6;color:#9ca3af}
+.opt-btn.timeout .opt-circle{background:#ca8a04;color:#fff}
+.opt-text{font-size:14px;font-weight:500;line-height:1.45;color:#1e1b4b}
+.opt-btn.correct .opt-text{color:#14532d;font-weight:700}
+.opt-btn.wrong .opt-text,.opt-btn.timeout .opt-text{color:#92400e}
+.opt-btn.dimmed .opt-text{color:#9ca3af}
+.opt-code{font-family:'Fira Code',monospace;font-size:12.5px}
+
+/* Explanation */
+.exp-box{border-radius:14px;padding:15px;margin-bottom:11px;box-shadow:0 2px 8px rgba(0,0,0,.04);animation:fadeUp .3s ease}
+.exp-box.correct{background:#f0fdf4;border:1.5px solid #86efac}
+.exp-box.wrong{background:#fff5f5;border:1.5px solid #fca5a5}
+.exp-box.timeout{background:#fefce8;border:1.5px solid #fcd34d}
+.exp-header{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:14px;font-weight:800}
+.exp-box.correct .exp-header{color:#15803d}
+.exp-box.wrong .exp-header,.exp-box.timeout .exp-header{color:#92400e}
+.exp-text{color:#374151;font-size:13px;line-height:1.7}
+.action-btn{width:100%;background:linear-gradient(135deg,#2563eb,#4f46e5);border:none;border-radius:13px;padding:14px;color:#fff;font-weight:800;font-size:15px;cursor:pointer;box-shadow:0 4px 16px rgba(37,99,235,.28);animation:popIn .35s ease}
+
+/* ── Result ── */
+.result-wrap{animation:fadeUp .5s ease}
+/* Screenshot card */
+.screenshot-card{background:#fff;border:2px solid #c7d2fe;border-radius:20px;padding:24px;margin-bottom:14px;box-shadow:0 2px 16px rgba(37,99,235,.08)}
+.cert-header{text-align:center;padding-bottom:16px;border-bottom:1px dashed #c7d2fe;margin-bottom:16px}
+.cert-school{font-size:12px;font-weight:700;color:#6b7280;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px}
+.cert-title{font-size:18px;font-weight:900;color:#1e1b4b;margin-bottom:2px}
+.cert-sub{font-size:12px;color:#6b7280}
+.cert-student{text-align:center;margin-bottom:16px}
+.cert-name{font-size:22px;font-weight:900;color:#1e1b4b;margin-bottom:2px}
+.cert-meta{font-size:12px;color:#6b7280}
+.cert-score-ring{display:flex;justify-content:center;margin-bottom:16px}
+.score-ring-inner{width:110px;height:110px;border-radius:50%;border:6px solid;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative}
+.score-ring-pct{font-size:28px;font-weight:900;line-height:1}
+.score-ring-label{font-size:11px;font-weight:700;margin-top:2px}
+.cert-details{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px}
+.cert-detail-item{background:#f8faff;border:1px solid #e0e7ff;border-radius:10px;padding:10px;text-align:center}
+.cert-detail-val{font-size:18px;font-weight:900;color:#1e1b4b}
+.cert-detail-label{font-size:10px;color:#6b7280;font-weight:600;margin-top:2px}
+.badge-area{background:linear-gradient(135deg,#ede9fe,#dbeafe);border-radius:14px;padding:14px;text-align:center;margin-bottom:16px;border:1px solid #c4b5fd}
+.badge-label{font-size:11px;color:#5b21b6;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}
+.badge-text{font-size:15px;font-weight:900;color:#3730a3}
+.topic-section{padding-top:14px;border-top:1px dashed #c7d2fe}
+.topic-section-title{font-size:12px;font-weight:700;color:#374151;margin-bottom:10px}
+.topic-row{margin-bottom:9px}
+.topic-row-head{display:flex;justify-content:space-between;margin-bottom:3px}
+.topic-name{font-size:12px;font-weight:700;color:#374151}
+.topic-score-txt{font-size:11px;font-weight:800}
+.topic-bar-bg{height:6px;background:#f1f5f9;border-radius:50px;overflow:hidden}
+.topic-bar-fill{height:100%;border-radius:50px}
+.cert-footer{text-align:center;padding-top:14px;border-top:1px dashed #c7d2fe;margin-top:14px;font-size:11px;color:#9ca3af}
+
+/* Screenshot hint */
+.screenshot-hint{background:#fffbeb;border:1.5px solid #fcd34d;border-radius:14px;padding:12px 16px;margin-bottom:12px;display:flex;align-items:flex-start;gap:10px}
+.hint-icon{font-size:20px;flex-shrink:0}
+.hint-text{font-size:13px;color:#92400e;line-height:1.6}
+.hint-text strong{font-weight:800}
+
+/* Action buttons */
+.result-actions{display:flex;flex-direction:column;gap:10px}
+.btn-primary{background:linear-gradient(135deg,#2563eb,#4f46e5);border:none;border-radius:13px;padding:14px;color:#fff;font-weight:800;font-size:15px;cursor:pointer;box-shadow:0 4px 16px rgba(37,99,235,.28)}
+.btn-secondary{background:#fff;border:2px solid #c7d2fe;border-radius:13px;padding:13px;color:#3730a3;font-weight:800;font-size:14px;cursor:pointer}
+
+/* Ujian locked explanation */
+.locked-exp{background:#fef9c3;border:1.5px solid #fcd34d;border-radius:13px;padding:12px 15px;margin-bottom:11px;animation:fadeUp .3s ease;display:flex;align-items:center;gap:10px;font-size:13px;color:#92400e;font-weight:700}
+
+/* Fly items */
+.fly-item{position:fixed;pointer-events:none;z-index:999;font-family:'Fira Code',monospace;font-weight:700;color:#2563eb;font-size:13px}
+
+@media(max-width:480px){.q-text{font-size:14px}.opt-text{font-size:13px}.cert-details{grid-template-columns:1fr 1fr}.cert-detail-val{font-size:15px}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const Q=__Q_DATA__;
+
+const DIFF=__DIFF_DATA__;
+
+const COMPILE_STAGES=["📝","⚙️","💼","🚀"];
+const BG_SYMS=["📚","💡","✏️","🎯","📖","✅","⭐","🔍","📊","🧠","💬","🔬","🌟","📌","🧩"];
+const OPTLETTERS=["A","B","C","D"];
+const FLY_ITEMS=["📚","💡","✏️","🎯","⭐","🧠","✅","🔍","📊","🌟"];
+
+const EXAM_TOKEN = __EXAM_TOKEN__;
+const PRACTICE_RATIO = __PRACTICE_RATIO__;
+
+let state={
+  screen:"name",studentName:"",mode:"latihan",difficulty:null,
+  currentQ:0,score:0,selected:null,showExp:false,answers:[],compileStage:0,
+  timerVal:0,timerMax:0,timerInterval:null,timedOut:false,questions:[]
+};
+
+function shuffleArr(arr){
+  const a=arr.slice();
+  for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  return a;
+}
+function practiceCountFor(key){
+  return Math.max(1, Math.round(Q[key].length * PRACTICE_RATIO));
+}
+function countForMode(key){
+  return state.mode==="latihan" ? practiceCountFor(key) : Q[key].length;
+}
+
+function makeBg(){
+  return `<div class="bg-layer">${BG_SYMS.map((s,i)=>`<div class="bg-sym" style="left:${(i*7+3)%95}%;top:${(i*11+8)%88}%;font-size:${13+(i%3)*4}px;animation:bgFloat ${7+i%4}s ease-in-out ${i*.55}s infinite">${s}</div>`).join("")}</div>`;
+}
+
+function stopTimer(){
+  if(state.timerInterval){ clearInterval(state.timerInterval); state.timerInterval=null; }
+}
+
+function startTimer(){
+  stopTimer();
+  const d=DIFF[state.difficulty];
+  state.timerVal=d.timer;
+  state.timerMax=d.timer;
+  state.timedOut=false;
+  state.timerInterval=setInterval(()=>{
+    state.timerVal--;
+    updateTimerUI();
+    if(state.timerVal<=0){
+      stopTimer();
+      state.timedOut=true;
+      state.selected=-1;
+      state.showExp=true;
+      state.answers.push({correct:false,topic:state.questions[state.currentQ].short});
+      render();
+    }
+  },1000);
+}
+
+function updateTimerUI(){
+  const el=document.getElementById("timer-num");
+  const fill=document.getElementById("timer-fill");
+  const wrap=document.getElementById("timer-wrap");
+  if(!el||!fill) return;
+  const pct=Math.max(0,(state.timerVal/state.timerMax)*100);
+  const danger=state.timerVal<=10;
+  el.textContent=state.timerVal+"s";
+  el.className="timer-num "+(danger?"danger":"normal");
+  const barColor=state.timerVal>20?"#2563eb":state.timerVal>10?"#d97706":"#dc2626";
+  fill.style.width=pct+"%";
+  fill.style.background=barColor;
+}
+
+/* ── SCREENS ── */
+function renderName(){
+  return `
+  <div class="screen" style="animation:fadeUp .5s ease">
+    ${makeBg()}
+    <div class="inner">
+      <div class="name-hero" style="margin-top:20px">
+        <span class="app-icon">__APP_ICON__</span>
+        <span class="app-title">__APP_TITLE__</span>
+        <div class="app-sub">__APP_SUBTITLE__</div>
+      </div>
+      <div class="name-card">
+        <label class="name-label">Nama Lengkap Siswa</label>
+        <input class="name-input" id="name-input" type="text" placeholder="Ketik nama kamu di sini..." maxlength="50"
+          oninput="onNameInput()" onkeydown="if(event.key==='Enter')tryNext()"/>
+        <div class="err-msg" id="err-msg">Nama tidak boleh kosong!</div>
+
+        <div style="margin-top:20px;margin-bottom:10px">
+          <label class="name-label">Pilih Mode</label>
+          <div class="mode-row">
+            <button class="mode-btn" id="btn-latihan"
+              onclick="setMode('latihan')"
+              style="border-color:#86efac;background:#f0fdf4">
+              <span class="mode-icon">📖</span>
+              <div class="mode-label" style="color:#15803d">LATIHAN</div>
+              <div class="mode-desc" style="color:#4b7c59">Jawaban & penjelasan langsung ditampilkan. Timer sebagai info.</div>
+            </button>
+            <button class="mode-btn" id="btn-ujian"
+              onclick="setMode('ujian')"
+              style="border-color:#e0e7ff;background:#fff">
+              <span class="mode-icon">📝</span>
+              <div class="mode-label" style="color:#2563eb">UJIAN</div>
+              <div class="mode-desc" style="color:#6b7280">Penjelasan disembunyikan. Timer habis = jawaban hangus.${EXAM_TOKEN.length>0?' 🔒 Perlu kode akses.':''}</div>
+            </button>
+          </div>
+        </div>
+
+        <button class="next-btn" id="next-btn" onclick="tryNext()" disabled>
+          Pilih Tingkat Kesulitan →
+        </button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderToken(){
+  return `
+  <div class="screen" style="animation:fadeUp .45s ease">
+    ${makeBg()}
+    <div class="inner">
+      <div class="name-hero" style="margin-top:20px">
+        <span class="app-icon">🔐</span>
+        <span class="app-title" style="font-size:clamp(20px,6vw,30px)">Mode Ujian</span>
+        <div class="app-sub">Masukkan kode akses dari gurumu untuk melanjutkan</div>
+      </div>
+      <div class="name-card">
+        <label class="name-label">Kode Akses Ujian</label>
+        <input class="name-input" id="token-input" type="text" placeholder="Masukkan kode akses..." maxlength="60"
+          oninput="onTokenInput()" onkeydown="if(event.key==='Enter')checkToken()"/>
+        <div class="err-msg" id="token-err-msg">Kode akses salah. Coba lagi atau tanyakan ke gurumu.</div>
+        <button class="next-btn" id="token-next-btn" onclick="checkToken()" style="margin-top:16px">
+          Masuk Mode Ujian →
+        </button>
+        <span class="back-link" onclick="goScreen('name')">← Kembali</span>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderDiff(){
+  return `
+  <div class="screen" style="animation:fadeUp .45s ease">
+    ${makeBg()}
+    <div class="inner">
+      <div style="text-align:center;margin-bottom:18px;margin-top:16px">
+        <div style="font-size:14px;color:#6b7280;margin-bottom:4px">Halo, <strong style="color:#1e1b4b">${esc(state.studentName)}</strong>!</div>
+        <div style="font-size:13px;color:#6b7280">
+          Mode: <span style="font-weight:800;color:${state.mode==='latihan'?'#15803d':'#2563eb'}">${state.mode==='latihan'?'📖 LATIHAN':'📝 UJIAN'}</span>
+          &nbsp;·&nbsp; Pilih tingkat kesulitan:
+        </div>
+      </div>
+      <div class="diff-card">
+        <div class="diff-row">
+          ${Object.entries(DIFF).map(([key,d])=>`
+            <button class="diff-btn" onclick="startQuiz('${key}')"
+              style="border-color:${d.border}"
+              onmouseover="this.style.background='${d.light}';this.style.borderColor='${d.color}'"
+              onmouseout="this.style.background='#fff';this.style.borderColor='${d.border}'">
+              <span class="diff-icon">${d.icon}</span>
+              <div>
+                <div class="diff-label" style="color:${d.color}">${d.label}</div>
+                <div class="diff-desc">${d.desc} · ${countForMode(key)} soal · ⏱ ${d.timer}s/soal</div>
+              </div>
+              <span class="diff-arrow" style="color:${d.color}">→</span>
+            </button>`).join("")}
+        </div>
+      </div>
+      <span class="back-link" onclick="goScreen('name')">← Ubah nama / mode</span>
+    </div>
+  </div>`;
+}
+
+function renderQuiz(){
+  const {difficulty,currentQ,score,selected,showExp,compileStage,timedOut,mode}=state;
+  const d=DIFF[difficulty];
+  const qs=state.questions;
+  const q=qs[currentQ];
+  const isCorrect=selected===q.ans;
+  const pct=currentQ>0?Math.round(score/currentQ*100):0;
+  const progPct=Math.round((currentQ+1)/qs.length*100);
+
+  const optHtml=q.opts.map((opt,i)=>{
+    let cls="opt-btn";
+    let circleContent=OPTLETTERS[i];
+    if(selected!==null){
+      cls+=" answered";
+      if(timedOut){ if(i===q.ans){cls+=" timeout";circleContent="⏰";} else cls+=" dimmed"; }
+      else if(i===q.ans){cls+=" correct";circleContent="✓";}
+      else if(i===selected&&!isCorrect){cls+=" wrong";circleContent="✗";}
+      else cls+=" dimmed";
+    }
+    const optDisplay=opt.includes('<')||opt.match(/[a-z]+\(|->|\[|\{|&&|\|\|/)
+      ?`<code class="opt-code">${opt}</code>`:opt;
+    return `<button class="${cls}" ${selected===null?`onclick="selectOpt(${i})"`:"disabled"}>
+      <div class="opt-circle">${circleContent}</div>
+      <span class="opt-text">${optDisplay}</span>
+    </button>`;
+  }).join("");
+
+  const codeBlock=q.code?`<div class="q-code">${q.code}</div>`:"";
+
+  let expHtml="";
+  if(showExp){
+    if(mode==="ujian"){
+      expHtml=`
+        <div class="locked-exp">
+          🔒 Mode Ujian — penjelasan tidak ditampilkan
+        </div>
+        <button class="action-btn" onclick="nextQ()">${currentQ+1>=qs.length?"🏆 Lihat Hasil!":"Soal Berikutnya →"}</button>`;
+    } else {
+      const expCls=timedOut?"timeout":isCorrect?"correct":"wrong";
+      const expIcon=timedOut?"⏰ Waktu Habis!":isCorrect?"🎉 Jawaban Benar!":"💡 Jawaban Kurang Tepat";
+      expHtml=`
+        <div class="exp-box ${expCls}">
+          <div class="exp-header">${expIcon}</div>
+          <p class="exp-text">${q.exp}</p>
+        </div>
+        <button class="action-btn" onclick="nextQ()">${currentQ+1>=qs.length?"🏆 Lihat Hasil!":"Soal Berikutnya →"}</button>`;
+    }
+  }
+
+  const modePillCls=mode==="latihan"?"mode-pill-latihan":"mode-pill-ujian";
+  const modeLabel=mode==="latihan"?"📖 Latihan":"📝 Ujian";
+
+  return `
+  <div class="screen">
+    ${makeBg()}
+    <div class="inner">
+      <div class="topbar">
+        <div class="pill student-pill">${esc(state.studentName)}</div>
+        <div class="pill ${modePillCls}">${modeLabel}</div>
+        <div class="pill score-pill">⭐ ${score}/${currentQ} benar</div>
+      </div>
+
+      ${selected===null?`
+      <div class="timer-wrap" id="timer-wrap">
+        <div class="timer-bar-bg"><div class="timer-bar-fill" id="timer-fill" style="width:100%;background:#2563eb"></div></div>
+        <div class="timer-display">
+          <span class="timer-label">Soal ${currentQ+1} dari ${qs.length} &nbsp;·&nbsp; ${d.icon} ${d.label}</span>
+          <span class="timer-num normal" id="timer-num">${state.timerVal}s</span>
+        </div>
+      </div>`:`
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <span style="font-size:12px;color:#6b7280;font-weight:600">Soal ${currentQ+1} dari ${qs.length} &nbsp;·&nbsp; ${d.icon} ${d.label}</span>
+        <span style="font-size:12px;color:#6b7280;font-weight:600">Sisa waktu: ${timedOut?"⏰ Habis":state.timerVal+"s"}</span>
+      </div>`}
+
+      <div class="prog-line"><div class="prog-fill" style="width:${progPct}%"></div></div>
+
+      <div class="compile-bar">
+        <div class="compile-emoji">${COMPILE_STAGES[compileStage]}</div>
+        <div class="compile-track">
+          <div class="compile-fill-wrap"><div class="compile-fill" style="width:${pct}%"></div></div>
+          <div class="compile-label">Progress: ${score}/${currentQ} · ${pct}%</div>
+        </div>
+      </div>
+
+      <div class="q-card">
+        <div class="q-topic" style="background:${d.light};color:${d.color}">${q.topic}</div>
+        <p class="q-text">${q.q}</p>
+        ${codeBlock}
+      </div>
+      <div class="opts">${optHtml}</div>
+      ${expHtml}
+    </div>
+  </div>`;
+}
+
+function renderResult(){
+  const {score,difficulty,answers,studentName,mode}=state;
+  const total=state.questions.length;
+  const d=DIFF[difficulty];
+  const pct=Math.round(score/total*100);
+  const now=new Date();
+  const dateStr=now.toLocaleDateString("id-ID",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+  const timeStr=now.toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"});
+
+  const grade=pct>=90
+    ?{icon:"🏆",label:"Luar Biasa!",color:"#d97706",border:"#fcd34d",bg:"#fef3c7",badge:"🌟🚀 Master "+__SUBJECT_BADGE__+" 🚀🌟"}
+    :pct>=70
+    ?{icon:"🥇",label:"Keren!",color:"#2563eb",border:"#93c5fd",bg:"#dbeafe",badge:"⚡ Siswa Berprestasi ⚡"}
+    :pct>=50
+    ?{icon:"🥈",label:"Lumayan!",color:"#059669",border:"#6ee7b7",bg:"#d1fae5",badge:"📝 Pembelajar Aktif 📝"}
+    :{icon:"📚",label:"Terus Belajar!",color:"#6b7280",border:"#d1d5db",bg:"#f9fafb",badge:"🔧 Calon Ahli 🔧"};
+
+  const topicMap={};
+  answers.forEach(a=>{
+    if(!topicMap[a.topic]) topicMap[a.topic]={correct:0,total:0};
+    topicMap[a.topic].total++;
+    if(a.correct) topicMap[a.topic].correct++;
+  });
+
+  const topicRows=Object.entries(topicMap).map(([topic,data])=>{
+    const tp=Math.round(data.correct/data.total*100);
+    const barColor=tp>=70?"linear-gradient(90deg,#2563eb,#818cf8)":tp>=50?"linear-gradient(90deg,#d97706,#fbbf24)":"linear-gradient(90deg,#dc2626,#f87171)";
+    const scoreColor=tp>=70?"#2563eb":tp>=50?"#d97706":"#dc2626";
+    return `<div class="topic-row">
+      <div class="topic-row-head"><span class="topic-name">${topic}</span><span class="topic-score-txt" style="color:${scoreColor}">${data.correct}/${data.total} · ${tp}%</span></div>
+      <div class="topic-bar-bg"><div class="topic-bar-fill" style="width:${tp}%;background:${barColor}"></div></div>
+    </div>`;
+  }).join("");
+
+  const timedOutCount=answers.filter(a=>!a.correct).length;
+
+  return `
+  <div class="screen">
+    ${makeBg()}
+    <div id="fly-layer"></div>
+    <div class="inner result-wrap">
+
+      <div class="screenshot-hint">
+        <span class="hint-icon">📸</span>
+        <div class="hint-text">
+          <strong>Bukti Pengerjaan:</strong> Screenshot kartu hasil di bawah ini, lalu kirim ke guru sebagai bukti pengerjaan kuis!<br>
+          <span style="font-size:11px">HP: tekan tombol Power+Volume Bawah · PC: tekan Prtscn atau Snipping Tool</span>
+        </div>
+      </div>
+
+      <!-- KARTU SCREENSHOT -->
+      <div class="screenshot-card" id="result-card">
+        <div class="cert-header">
+          <div class="cert-school">__SCHOOL_LINE__</div>
+          <div class="cert-title">__CERT_TITLE__</div>
+          <div class="cert-sub">Guru: __TEACHER_NAME__ &nbsp;·&nbsp; Mode: ${mode==='latihan'?'📖 Latihan':'📝 Ujian'} &nbsp;·&nbsp; ${d.icon} ${d.label}</div>
+        </div>
+
+        <div class="cert-student">
+          <div style="font-size:12px;color:#6b7280;margin-bottom:3px">Nama Siswa</div>
+          <div class="cert-name">${esc(studentName)}</div>
+          <div class="cert-meta">${dateStr} &nbsp;·&nbsp; ${timeStr}</div>
+        </div>
+
+        <div class="cert-score-ring">
+          <div class="score-ring-inner" style="border-color:${grade.color}">
+            <div class="score-ring-pct" style="color:${grade.color}">${pct}%</div>
+            <div class="score-ring-label" style="color:${grade.color}">${grade.icon} ${grade.label}</div>
+          </div>
+        </div>
+
+        <div class="cert-details">
+          <div class="cert-detail-item">
+            <div class="cert-detail-val" style="color:#16a34a">${score}</div>
+            <div class="cert-detail-label">Benar</div>
+          </div>
+          <div class="cert-detail-item">
+            <div class="cert-detail-val" style="color:#dc2626">${total-score}</div>
+            <div class="cert-detail-label">Salah / Timeout</div>
+          </div>
+          <div class="cert-detail-item">
+            <div class="cert-detail-val" style="color:#2563eb">${total}</div>
+            <div class="cert-detail-label">Total Soal</div>
+          </div>
+        </div>
+
+        <div class="badge-area">
+          <div class="badge-label">🏅 Lencana Digital</div>
+          <div class="badge-text">${grade.badge}</div>
+        </div>
+
+        <div class="topic-section">
+          <div class="topic-section-title">📊 Performa per Topik</div>
+          ${topicRows}
+        </div>
+
+        <div class="cert-footer">
+          __FOOTER_TEXT__ &nbsp;·&nbsp; #${Math.random().toString(36).substring(2,8).toUpperCase()}
+        </div>
+      </div>
+
+      <div class="result-actions">
+        <button class="btn-primary" onclick="retryDiff()">🔄 Coba Lagi (Tingkat Berbeda)</button>
+        <button class="btn-secondary" onclick="goScreen('name')">👤 Ganti Siswa / Mode</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ── Logic ── */
+function render(){
+  document.getElementById("app").innerHTML=
+    state.screen==="name"?renderName():
+    state.screen==="token"?renderToken():
+    state.screen==="diff"?renderDiff():
+    state.screen==="quiz"?renderQuiz():
+    renderResult();
+  if(state.screen==="quiz"&&state.selected===null) updateTimerUI();
+  if(state.screen==="result") spawnFly();
+}
+
+function esc(s){ return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+
+function onNameInput(){
+  const v=document.getElementById("name-input").value.trim();
+  document.getElementById("next-btn").disabled=v.length<2;
+  document.getElementById("err-msg").style.display="none";
+  document.getElementById("name-input").classList.remove("error");
+}
+
+function setMode(m){
+  state.mode=m;
+  const bl=document.getElementById("btn-latihan");
+  const bu=document.getElementById("btn-ujian");
+  if(m==="latihan"){
+    bl.style.borderColor="#86efac";bl.style.background="#f0fdf4";
+    bu.style.borderColor="#e0e7ff";bu.style.background="#fff";
+  } else {
+    bu.style.borderColor="#93c5fd";bu.style.background="#eff6ff";
+    bl.style.borderColor="#e0e7ff";bl.style.background="#fff";
+  }
+}
+
+function tryNext(){
+  const v=document.getElementById("name-input")?document.getElementById("name-input").value.trim():"";
+  if(v.length<2){
+    document.getElementById("name-input").classList.add("error");
+    document.getElementById("err-msg").style.display="block";
+    return;
+  }
+  state.studentName=v;
+  if(state.mode==="ujian" && EXAM_TOKEN.length>0){
+    goScreen("token");
+  } else {
+    goScreen("diff");
+  }
+}
+
+function onTokenInput(){
+  document.getElementById("token-err-msg").style.display="none";
+  document.getElementById("token-input").classList.remove("error");
+}
+
+function checkToken(){
+  const v=document.getElementById("token-input").value.trim();
+  if(v.toLowerCase() !== EXAM_TOKEN.toLowerCase()){
+    document.getElementById("token-input").classList.add("error");
+    document.getElementById("token-err-msg").style.display="block";
+    return;
+  }
+  goScreen("diff");
+}
+
+function goScreen(s){ stopTimer(); state.screen=s; render(); }
+
+function startQuiz(diff){
+  state.difficulty=diff;
+  const n=countForMode(diff);
+  state.questions=shuffleArr(Q[diff]).slice(0,n);
+  state.currentQ=0; state.score=0; state.selected=null;
+  state.showExp=false; state.answers=[]; state.compileStage=0;
+  state.screen="quiz";
+  render();
+  startTimer();
+}
+
+function selectOpt(i){
+  if(state.selected!==null) return;
+  stopTimer();
+  const q=state.questions[state.currentQ];
+  const correct=i===q.ans;
+  state.selected=i; state.showExp=true;
+  if(correct) state.score++;
+  state.answers.push({correct,topic:q.short});
+  const p=state.score/state.questions.length;
+  state.compileStage=p>=.9?3:p>=.6?2:p>=.3?1:0;
+  render();
+}
+
+function nextQ(){
+  const total=state.questions.length;
+  if(state.currentQ+1>=total){ stopTimer(); state.screen="result"; render(); return; }
+  state.currentQ++;
+  state.selected=null; state.showExp=false; state.timedOut=false;
+  render();
+  startTimer();
+}
+
+function retryDiff(){ stopTimer(); state.screen="diff"; render(); }
+
+function spawnFly(){
+  const layer=document.getElementById("fly-layer");
+  if(!layer) return;
+  FLY_ITEMS.forEach(txt=>{
+    const el=document.createElement("div");
+    el.className="fly-item";
+    el.textContent=txt;
+    el.style.cssText=`left:${Math.random()*100}%;bottom:0;font-size:${11+Math.floor(Math.random()*12)}px;animation:codeFly ${3+Math.random()*3.5}s ease-in ${Math.random()*2.5}s 1 forwards`;
+    layer.appendChild(el);
+  });
+}
+
+render();
+<\/script>
+</body>
+</html>
+
+
+</script>
+<script>
+/* ========================================================================
+   GENERATOR KUIS INTERAKTIF AI — logic
+   ======================================================================== */
+
+// ---------- small utils ----------
+const $ = id => document.getElementById(id);
+const escHtml = s => String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+function safeJsonForScript(obj){
+  return JSON.stringify(obj)
+    .replace(/</g,'\\u003c')
+    .replace(/>/g,'\\u003e')
+    .replace(/&/g,'\\u0026')
+    .replace(/\u2028/g,'\\u2028')
+    .replace(/\u2029/g,'\\u2029');
+}
+function fillTemplate(tpl, map){
+  let out = tpl;
+  for(const [token, val] of Object.entries(map)) out = out.split(token).join(val);
+  return out;
+}
+
+// ---------- state ----------
+let uploadedMaterialText = '';
+let uploadedFileName = '';
+
+// ---------- radio card UI ----------
+document.querySelectorAll('#matSourceRow .opt-radio').forEach(label=>{
+  label.addEventListener('click', ()=>{
+    document.querySelectorAll('#matSourceRow .opt-radio').forEach(l=>l.classList.remove('checked'));
+    label.classList.add('checked');
+    label.querySelector('input').checked = true;
+    $('uploadArea').style.display = label.dataset.val === 'upload' ? 'block' : 'none';
+  });
+});
+
+// ---------- API key show/hide ----------
+$('toggleKeyBtn').addEventListener('click', ()=>{
+  const inp = $('apiKey');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+});
+(function restoreKey(){
+  try{
+    const saved = localStorage.getItem('gemini_quiz_gen_key');
+    if(saved){ $('apiKey').value = saved; $('rememberKey').checked = true; }
+  }catch(e){ /* localStorage unavailable (private browsing / file:// restrictions) — ignore */ }
+})();
+
+// ---------- model select ----------
+$('modelSelect').addEventListener('change', ()=>{
+  const isCustom = $('modelSelect').value === '__custom__';
+  $('modelCustomInput').style.display = isCustom ? 'block' : 'none';
+  if(isCustom) $('modelCustomInput').focus();
+});
+function getSelectedModel(){
+  const v = $('modelSelect').value;
+  if(v === '__custom__') return $('modelCustomInput').value.trim() || 'gemini-3.5-flash-lite';
+  return v;
+}
+
+// ---------- material preview toggle ----------
+$('togglePreview').addEventListener('click', ()=>{
+  const el = $('materialPreview');
+  const show = el.style.display === 'none';
+  el.style.display = show ? 'block' : 'none';
+  $('togglePreview').textContent = show ? '🙈 Sembunyikan teks materi' : '👁️ Lihat teks yang berhasil diekstrak';
+});
+
+// ---------- dropzone / file handling ----------
+const dropzone = $('dropzone'), fileInput = $('fileInput');
+dropzone.addEventListener('click', ()=>fileInput.click());
+dropzone.addEventListener('dragover', e=>{e.preventDefault(); dropzone.classList.add('drag');});
+dropzone.addEventListener('dragleave', ()=>dropzone.classList.remove('drag'));
+dropzone.addEventListener('drop', e=>{
+  e.preventDefault(); dropzone.classList.remove('drag');
+  if(e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+});
+fileInput.addEventListener('change', e=>{ if(e.target.files[0]) handleFile(e.target.files[0]); });
+
+function showFileChip(name, statusText, ok){
+  const chip = $('fileChip');
+  chip.style.display = 'flex';
+  chip.className = 'file-chip';
+  chip.style.background = ok ? '#f0fdf4' : '#fff5f5';
+  chip.style.borderColor = ok ? '#86efac' : '#fca5a5';
+  chip.innerHTML = `<span class="file-chip-icon">${ok?'✅':'⚠️'}</span>
+    <span class="file-chip-name" style="color:${ok?'#15803d':'#991b1b'}">${escHtml(name)} — ${escHtml(statusText)}</span>
+    <button class="file-chip-remove" id="fileRemoveBtn" type="button">✕</button>`;
+  $('fileRemoveBtn').addEventListener('click', ()=>{
+    uploadedMaterialText=''; uploadedFileName='';
+    chip.style.display='none'; fileInput.value='';
+    $('materialPreviewWrap').style.display='none';
+  });
+}
+
+let pdfJsLoading=null, mammothLoading=null;
+function loadScript(src){
+  return new Promise((res,rej)=>{
+    const s=document.createElement('script');
+    s.src=src; s.onload=res; s.onerror=()=>rej(new Error('Gagal memuat pustaka: '+src));
+    document.head.appendChild(s);
+  });
+}
+async function ensurePdfJs(){
+  if(window.pdfjsLib) return;
+  if(!pdfJsLoading) pdfJsLoading = loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js').then(()=>{
+    window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  });
+  await pdfJsLoading;
+}
+async function ensureMammoth(){
+  if(window.mammoth) return;
+  if(!mammothLoading) mammothLoading = loadScript('https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js');
+  await mammothLoading;
+}
+
+async function extractPdfText(file){
+  await ensurePdfJs();
+  const buf = await file.arrayBuffer();
+  const pdf = await window.pdfjsLib.getDocument({data:buf}).promise;
+  let text='';
+  const maxPages = Math.min(pdf.numPages, 60);
+  for(let i=1;i<=maxPages;i++){
+    const page = await pdf.getPage(i);
+    const content = await page.getTextContent();
+    text += content.items.map(it=>it.str).join(' ') + '\n\n';
+  }
+  return text;
+}
+async function extractDocxText(file){
+  await ensureMammoth();
+  const buf = await file.arrayBuffer();
+  const result = await window.mammoth.extractRawText({arrayBuffer:buf});
+  return result.value;
+}
+async function extractTextFile(file){
+  return await file.text();
+}
+
+async function handleFile(file){
+  const MAX_SIZE = 15*1024*1024;
+  if(file.size > MAX_SIZE){
+    showFileChip(file.name, 'Ukuran file terlalu besar (maks 15MB)', false);
+    return;
+  }
+  uploadedFileName = file.name;
+  showFileChip(file.name, 'Mengekstrak teks...', true);
+  try{
+    const ext = file.name.split('.').pop().toLowerCase();
+    let text = '';
+    if(ext === 'pdf') text = await extractPdfText(file);
+    else if(ext === 'docx') text = await extractDocxText(file);
+    else if(ext === 'txt' || ext === 'md') text = await extractTextFile(file);
+    else throw new Error('Format file tidak didukung');
+
+    text = text.replace(/[ \t]+/g,' ').replace(/\n{3,}/g,'\n\n').trim();
+    if(text.length < 30) throw new Error('Teks yang diekstrak terlalu sedikit / kosong');
+
+    uploadedMaterialText = text.slice(0, 60000);
+    showFileChip(file.name, `Berhasil diekstrak (${uploadedMaterialText.length.toLocaleString('id-ID')} karakter)`, true);
+    $('materialPreviewWrap').style.display='block';
+    $('materialPreview').textContent = uploadedMaterialText.slice(0,4000) + (uploadedMaterialText.length>4000 ? '\n\n… (dipotong untuk pratinjau)':'');
+  }catch(err){
+    uploadedMaterialText='';
+    showFileChip(file.name, 'Gagal: '+err.message, false);
+  }
+}
+
+// ---------- Gemini API ----------
+async function callGemini(apiKey, model, body){
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`;
+  const res = await fetch(url, {
+    method:'POST',
+    headers:{'Content-Type':'application/json','x-goog-api-key':apiKey},
+    body: JSON.stringify(body)
+  });
+  const data = await res.json().catch(()=>null);
+  if(!res.ok){
+    let msg = data?.error?.message || `HTTP ${res.status}`;
+    if(/no longer available/i.test(msg)){
+      msg += `\n\n👉 Ganti kolom "Model" di atas ke "gemini-3.5-flash-lite" atau "gemini-3.6-flash", lalu klik "Buat Kuis Sekarang" lagi. Google sering menghentikan model lama untuk API key baru.`;
+    } else if(res.status === 400 && /API key/i.test(msg)){
+      msg += `\n\n👉 Periksa lagi API key kamu di kolom "Gemini API Key" di atas.`;
+    } else if(res.status === 429){
+      msg += `\n\n👉 Kuota/rate limit API key kamu tercapai. Tunggu sebentar lalu coba lagi, atau kurangi jumlah soal.`;
+    }
+    throw new Error(msg);
+  }
+  const cand = data?.candidates?.[0];
+  if(!cand){
+    const blockReason = data?.promptFeedback?.blockReason;
+    throw new Error(blockReason ? `Diblokir oleh Gemini (${blockReason})` : 'Gemini tidak mengembalikan hasil apa pun.');
+  }
+  if(cand.finishReason === 'SAFETY') throw new Error('Respons diblokir oleh filter keamanan Gemini.');
+  const text = (cand.content?.parts || []).map(p=>p.text || '').join('');
+  return text;
+}
+
+async function fetchMaterialViaSearch(apiKey, model, subject, className){
+  const prompt = `Kamu adalah asisten kurikulum SMK di Indonesia. Carilah dan rangkum materi pembelajaran tentang topik "${subject}" yang relevan untuk siswa kelas ${className}.
+Sertakan: (1) konsep-konsep kunci & istilah penting, (2) data/fakta terkini jika relevan, (3) contoh nyata/studi kasus jika ada, (4) penerapan dunia kerja/profesi terkait jika relevan.
+Tulis ringkasan terstruktur dengan sub-judul singkat, sekitar 600-1200 kata, dalam Bahasa Indonesia yang jelas dan mudah dipahami siswa SMK. Jangan gunakan format markdown seperti tanda bintang atau pagar.`;
+  const text = await callGemini(apiKey, model, {
+    contents:[{parts:[{text:prompt}]}],
+    tools:[{google_search:{}}]
+  });
+  return text.trim();
+}
+
+function buildQuestionSchema(){
+  return {
+    type:'OBJECT',
+    properties:{
+      topic:{type:'STRING', description:'Label singkat topik soal ini, diawali satu emoji relevan'},
+      short:{type:'STRING', description:'Label topik sama tanpa emoji, untuk pengelompokan'},
+      q:{type:'STRING', description:'Teks pertanyaan'},
+      opts:{type:'ARRAY', items:{type:'STRING'}, description:'Tepat 4 pilihan jawaban'},
+      ans:{type:'INTEGER', description:'Indeks (0-3) jawaban yang benar pada opts'},
+      exp:{type:'STRING', description:'Penjelasan singkat kenapa jawaban itu benar'}
+    },
+    required:['topic','short','q','opts','ans','exp']
+  };
+}
+
+function buildQuizSchema(levels){
+  const props = { appIcon:{type:'STRING', description:'Satu emoji yang mewakili topik/mapel ini'} };
+  const required = ['appIcon'];
+  levels.forEach(lv=>{ props[lv] = {type:'ARRAY', items: buildQuestionSchema()}; required.push(lv); });
+  return {type:'OBJECT', properties:props, required};
+}
+
+async function generateQuizJson(apiKey, model, {subject, className, materialText, counts, customInstructions}){
+  const levels = Object.keys(counts).filter(k=>counts[k] > 0);
+  const schema = buildQuizSchema(levels);
+  const materialBlock = materialText && materialText.trim()
+    ? `MATERI ACUAN:\n"""\n${materialText.slice(0,60000)}\n"""\n`
+    : `MATERI ACUAN: (tidak disediakan — gunakan pengetahuanmu sendiri yang akurat tentang topik ini, sesuai jenjang SMK)\n`;
+
+  const countLines = levels.map(lv=>{
+    const label = lv==='mudah' ? 'Mudah → fokus pada definisi, fakta dasar, dan pemahaman istilah'
+      : lv==='sedang' ? 'Sedang → fokus pada pemahaman konsep lebih dalam, perbandingan, dan penerapan'
+      : 'Sulit → fokus pada analisis, studi kasus, angka/data spesifik, dan penalaran';
+    return `- ${lv[0].toUpperCase()+lv.slice(1)}: ${counts[lv]} soal → ${label}`;
+  }).join('\n');
+
+  const instructionBlock = customInstructions && customInstructions.trim()
+    ? `\nINSTRUKSI KHUSUS DARI GURU (ikuti selama tidak bertentangan dengan aturan format di atas):\n"""\n${customInstructions.trim().slice(0,2000)}\n"""\n`
+    : '';
+
+  const prompt = `Kamu adalah guru SMK ahli yang membuat soal kuis pilihan ganda berkualitas tinggi dalam Bahasa Indonesia.
+
+KONTEKS:
+- Mata pelajaran/topik: ${subject}
+- Kelas: ${className}
+${materialBlock}
+TUGAS:
+Buatlah bank soal kuis pilihan ganda (4 opsi, 1 jawaban benar) berdasarkan materi acuan di atas, dengan jumlah soal per tingkat kesulitan sebagai berikut:
+${countLines}
+
+ATURAN PENULISAN SOAL:
+1. Semua soal dan jawaban ditulis dalam Bahasa Indonesia yang baik dan sesuai jenjang kelas ${className}.
+2. Setiap soal harus punya TEPAT 4 pilihan jawaban, hanya 1 yang benar.
+3. Field "ans" adalah indeks (0,1,2, atau 3) dari jawaban yang benar pada array "opts".
+4. Field "topic" diisi label singkat bertema disertai satu emoji relevan di depan (contoh: "🌐 Dunia Digital").
+5. Field "short" adalah label topik yang sama tanpa emoji, untuk pengelompokan (contoh: "Dunia Digital"). Usahakan konsisten memakai 5-8 kelompok topik yang berulang di beberapa soal.
+6. Field "exp" berisi penjelasan singkat (2-4 kalimat) mengapa jawaban itu benar, bersifat edukatif.
+7. Jangan mengulang soal yang identik atau terlalu mirip. Variasikan gaya soal (definisi, studi kasus, analisis, perbandingan, angka/fakta).
+8. Jangan gunakan format markdown (tanda bintang, pagar, dsb) di dalam teks soal/opsi/penjelasan.
+9. Sesuaikan tingkat kesulitan secara nyata: soal "sulit" harus lebih menantang secara penalaran daripada "mudah", bukan sekadar lebih panjang.
+10. "appIcon" diisi satu emoji tunggal yang mewakili mata pelajaran/topik ini.
+${instructionBlock}
+Keluarkan hasil HANYA dalam format JSON sesuai skema yang diberikan.`;
+
+  const text = await callGemini(apiKey, model, {
+    contents:[{parts:[{text:prompt}]}],
+    generationConfig:{ responseMimeType:'application/json', responseSchema: schema, temperature: 0.9 }
+  });
+
+  let data;
+  try{ data = JSON.parse(text); }
+  catch(e){ throw new Error('Gagal membaca hasil AI sebagai JSON. Coba klik "Buat Kuis Sekarang" lagi.'); }
+
+  levels.forEach(lv=>{
+    if(!Array.isArray(data[lv]) || data[lv].length === 0){
+      throw new Error(`AI tidak menghasilkan soal untuk tingkat "${lv}". Coba lagi atau kurangi jumlah soal.`);
+    }
+    data[lv].forEach((q,i)=>{
+      if(!q.q || !Array.isArray(q.opts) || q.opts.length !== 4 || typeof q.ans !== 'number' || q.ans<0 || q.ans>3 || !q.exp){
+        throw new Error(`Struktur soal ke-${i+1} pada tingkat "${lv}" tidak valid.`);
+      }
+      q.code = ''; // template compatibility (no code blocks from AI-generated content)
+    });
+  });
+
+  return data;
+}
+
+// ---------- assemble final quiz HTML ----------
+const DIFF_META = {
+  mudah:{label:'MUDAH', icon:'📝', color:'#16a34a', light:'#dcfce7', border:'#86efac', desc:'Fakta dasar & pemahaman istilah', timer:45},
+  sedang:{label:'SEDANG', icon:'⚙️', color:'#2563eb', light:'#dbeafe', border:'#93c5fd', desc:'Pemahaman konsep & penerapan', timer:35},
+  sulit:{label:'SULIT', icon:'🚀', color:'#7c3aed', light:'#ede9fe', border:'#c4b5fd', desc:'Analisis & studi kasus', timer:25}
+};
+
+function buildFinalHtml({teacherName, schoolName, subject, className, quizData, examToken, practiceRatio}){
+  const levels = ['mudah','sedang','sulit'].filter(lv => Array.isArray(quizData[lv]) && quizData[lv].length>0);
+  const Q = {}; const DIFF = {};
+  levels.forEach(lv=>{ Q[lv] = quizData[lv]; DIFF[lv] = DIFF_META[lv]; });
+
+  const appIcon = (quizData.appIcon || '📚').trim().slice(0,4) || '📚';
+  // The template's own closing script tag was stored escaped, so it would not
+  // prematurely terminate this text/template block. Restore it here.
+  const CLOSE_SCRIPT_TAG = '<' + '/script>';
+  const tpl = $('quiz-template').textContent.split('<\\/script>').join(CLOSE_SCRIPT_TAG);
+
+  const map = {
+    '__PAGE_TITLE__': escHtml(`Kuis ${subject} – ${className}`),
+    '__APP_ICON__': appIcon,
+    '__APP_TITLE__': escHtml(`KUIS ${subject}`),
+    '__APP_SUBTITLE__': escHtml(`${className}${schoolName ? ' · '+schoolName : ''}`),
+    '__SCHOOL_LINE__': escHtml(`${schoolName || 'Kuis Interaktif'} · ${className}`),
+    '__CERT_TITLE__': escHtml(`Hasil Kuis ${subject}`),
+    '__TEACHER_NAME__': escHtml(teacherName || 'Guru Pengampu'),
+    '__FOOTER_TEXT__': escHtml(`Diverifikasi oleh Generator Kuis AI (Gemini) · ${schoolName || subject}`),
+    '__SUBJECT_BADGE__': JSON.stringify(subject),
+    '__Q_DATA__': safeJsonForScript(Q),
+    '__DIFF_DATA__': safeJsonForScript(DIFF),
+    '__EXAM_TOKEN__': JSON.stringify(examToken || ''),
+    '__PRACTICE_RATIO__': String(Math.min(1, Math.max(0.1, practiceRatio || 0.75)))
+  };
+  return fillTemplate(tpl, map);
+}
+
+// ---------- status stepper UI ----------
+const STEPS = [
+  {key:'material', label:'Menyiapkan materi referensi'},
+  {key:'quiz', label:'Menyusun soal kuis dengan AI'},
+  {key:'assemble', label:'Merakit file HTML kuis'}
+];
+function renderSteps(activeKey, doneKeys, errorKey){
+  $('stepList').innerHTML = STEPS.map(s=>{
+    let cls='step-item', iconHtml=`<span>•</span>`;
+    if(doneKeys.includes(s.key)){ cls+=' done'; iconHtml='✓'; }
+    else if(s.key===errorKey){ cls+=' error'; iconHtml='✕'; }
+    else if(s.key===activeKey){ cls+=' active'; iconHtml='<div class="spinner"></div>'; }
+    return `<div class="${cls}"><div class="step-icon">${iconHtml}</div><div class="step-text">${escHtml(s.label)}</div></div>`;
+  }).join('');
+}
+function showError(msg){
+  $('errorBox').innerHTML = `<div class="error-box"><div class="error-title">⚠️ Terjadi kendala</div><div class="error-detail">${escHtml(msg)}</div></div>`;
+}
+
+// ---------- main pipeline ----------
+$('generateBtn').addEventListener('click', async ()=>{
+  const teacherName = $('teacherName').value.trim();
+  const schoolName = $('schoolName').value.trim();
+  const subject = $('subject').value.trim();
+  const className = $('className').value.trim();
+  const apiKey = $('apiKey').value.trim();
+  const model = getSelectedModel();
+  const matSource = document.querySelector('input[name="matSource"]:checked').value;
+  const customInstructions = $('customInstructions').value.trim();
+  const examToken = $('examToken').value.trim();
+  const practiceRatioPct = Math.min(100, Math.max(10, parseInt($('practiceRatioPct').value) || 75));
+  const practiceRatio = practiceRatioPct / 100;
+
+  const counts = {
+    mudah: parseInt($('countMudah').value)||0,
+    sedang: parseInt($('countSedang').value)||0,
+    sulit: parseInt($('countSulit').value)||0
+  };
+
+  if(!subject || !className){ alert('Mohon isi Mata Pelajaran/Topik dan Kelas terlebih dahulu.'); return; }
+  if(!apiKey){ alert('Mohon isi Gemini API Key terlebih dahulu.'); return; }
+  if(counts.mudah+counts.sedang+counts.sulit <= 0){ alert('Total jumlah soal minimal 1.'); return; }
+  if(matSource==='upload' && !uploadedMaterialText){ alert('Silakan upload file materi terlebih dahulu, atau pilih sumber materi lain.'); return; }
+
+  try{
+    if($('rememberKey').checked) localStorage.setItem('gemini_quiz_gen_key', apiKey);
+    else localStorage.removeItem('gemini_quiz_gen_key');
+  }catch(e){ /* localStorage unavailable — continue without remembering the key */ }
+
+  $('generateBtn').disabled = true;
+  $('statusCard').style.display = 'block';
+  $('resultCard').style.display = 'none';
+  $('errorBox').innerHTML = '';
+  $('statusCard').scrollIntoView({behavior:'smooth', block:'start'});
+
+  const doneKeys = [];
+  try{
+    // Step 1: material
+    renderSteps('material', doneKeys, null);
+    let materialText = '';
+    if(matSource === 'upload') materialText = uploadedMaterialText;
+    else if(matSource === 'search') materialText = await fetchMaterialViaSearch(apiKey, model, subject, className);
+    else materialText = '';
+    doneKeys.push('material');
+
+    // Step 2: quiz generation
+    renderSteps('quiz', doneKeys, null);
+    const quizData = await generateQuizJson(apiKey, model, {subject, className, materialText, counts, customInstructions});
+    doneKeys.push('quiz');
+
+    // Step 3: assemble
+    renderSteps('assemble', doneKeys, null);
+    const finalHtml = buildFinalHtml({teacherName, schoolName, subject, className, quizData, examToken, practiceRatio});
+    doneKeys.push('assemble');
+    renderSteps(null, doneKeys, null);
+
+    // show result
+    const levels = ['mudah','sedang','sulit'].filter(lv=>Array.isArray(quizData[lv]) && quizData[lv].length>0);
+    const total = levels.reduce((a,lv)=>a+quizData[lv].length,0);
+    $('resultDesc').textContent = `${subject} · ${className}`;
+    $('resultSummary').innerHTML = `
+      <div class="result-stat"><div class="result-stat-val">${total}</div><div class="result-stat-label">Total Soal Ujian</div></div>
+      <div class="result-stat"><div class="result-stat-val">${quizData.mudah?.length||0}</div><div class="result-stat-label">📝 Mudah</div></div>
+      <div class="result-stat"><div class="result-stat-val">${quizData.sedang?.length||0}</div><div class="result-stat-label">⚙️ Sedang</div></div>
+      <div class="result-stat"><div class="result-stat-val">${quizData.sulit?.length||0}</div><div class="result-stat-label">🚀 Sulit</div></div>`;
+    $('resultSummary').insertAdjacentHTML('afterend', `
+      <div class="field-hint" style="margin:-8px 0 14px">
+        📖 Mode Latihan otomatis memakai ~${practiceRatioPct}% soal per tingkat (dipilih acak).
+        ${examToken ? `🔒 Mode Ujian butuh kode akses: <strong style="color:#374151">${escHtml(examToken)}</strong> (beri tahu siswa saat ujian dimulai).` : '🔓 Mode Ujian tidak memakai kode akses (bebas dimasuki siapa saja).'}
+      </div>`);
+
+    const slug = subject.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'').slice(0,40) || 'kuis';
+    const fileName = `kuis-${slug}.html`;
+    $('previewLabel').textContent = fileName;
+    $('previewFrame').srcdoc = finalHtml;
+
+    $('downloadBtn').onclick = ()=>{
+      const blob = new Blob([finalHtml], {type:'text/html'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = fileName; a.click();
+      setTimeout(()=>URL.revokeObjectURL(url), 4000);
+    };
+    $('openTabBtn').onclick = ()=>{
+      const blob = new Blob([finalHtml], {type:'text/html'});
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
+    };
+
+    $('resultCard').style.display = 'block';
+    $('resultCard').scrollIntoView({behavior:'smooth', block:'start'});
+  }catch(err){
+    const failedStep = doneKeys.length < STEPS.length ? STEPS[doneKeys.length].key : null;
+    renderSteps(null, doneKeys, failedStep);
+    showError(err.message || String(err));
+  }finally{
+    $('generateBtn').disabled = false;
+  }
+});
+
+$('resetBtn').addEventListener('click', ()=>{
+  $('resultCard').style.display='none';
+  $('statusCard').style.display='none';
+  window.scrollTo({top:0, behavior:'smooth'});
+});
+</script>
+
+</body>
+</html>
