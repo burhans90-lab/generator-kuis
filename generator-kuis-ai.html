@@ -116,13 +116,95 @@ code,.mono{font-family:'Fira Code',monospace}
 
 .footer-note{text-align:center;font-size:11.5px;color:#9ca3af;margin-top:20px;line-height:1.7}
 
-.home-nav{position:fixed;top:16px;left:16px;z-index:50;display:flex;align-items:center;gap:6px;background:#fff;border:1.5px solid #e0e7ff;border-radius:20px;padding:8px 16px 8px 12px;font-size:12.5px;font-weight:800;color:#4338ca;box-shadow:0 2px 10px rgba(37,99,235,.1);text-decoration:none;transition:all .18s}
-.home-nav:hover{border-color:#c7d2fe;background:#f8faff;transform:translateY(-1px)}
-@media(max-width:560px){.home-nav{position:static;display:inline-flex;margin-bottom:14px}}
+.app-header{position:sticky;top:0;z-index:60;backdrop-filter:blur(10px);background:rgba(240,246,255,.85);border-bottom:1.5px solid #e0e7ff}
+.header-inner{max-width:760px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.header-brand{display:flex;align-items:center;gap:10px;min-width:0;text-decoration:none}
+.header-brand-mark{width:38px;height:38px;border-radius:11px;flex:none;background:linear-gradient(135deg,#2563eb,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:18px}
+.header-brand-text{min-width:0}
+.header-brand-title{font-size:13.5px;font-weight:900;color:#1e1b4b;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.header-brand-sub{font-size:10.5px;color:#6b7280;font-weight:700}
+.header-actions{display:flex;align-items:center;gap:8px;flex:none}
+.icon-btn{width:38px;height:38px;border-radius:11px;border:1.5px solid #e0e7ff;background:#fff;display:flex;align-items:center;justify-content:center;color:#4b5563;font-size:16px;position:relative;transition:.15s;text-decoration:none;flex:none}
+.icon-btn:hover{border-color:#c7d2fe;color:#4f46e5;transform:translateY(-1px);box-shadow:0 2px 10px rgba(37,99,235,.1)}
+.icon-badge-dot{position:absolute;top:-3px;right:-3px;width:9px;height:9px;border-radius:50%;background:#f59e0b;border:2px solid #fff}
+
+.modal-overlay{position:fixed;inset:0;background:rgba(30,27,75,.45);backdrop-filter:blur(2px);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px}
+.modal-card{background:#fff;border-radius:20px;max-width:480px;width:100%;max-height:88vh;overflow-y:auto;box-shadow:0 20px 60px rgba(30,27,75,.3);animation:popIn .25s ease}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1.5px solid #f1f5f9;position:sticky;top:0;background:#fff;border-radius:20px 20px 0 0}
+.modal-title{font-size:16px;font-weight:900;color:#1e1b4b}
+.modal-close{width:30px;height:30px;border-radius:50%;border:none;background:#f1f5f9;color:#6b7280;font-size:14px;font-weight:900;flex:none}
+.modal-close:hover{background:#e5e7eb}
+.modal-body{padding:20px}
+.modal-foot{padding:6px 20px 20px}
+
+.settings-status{display:flex;align-items:center;gap:10px;background:#fff;border:1.5px solid #e0e7ff;border-radius:14px;padding:12px 16px;margin-bottom:14px;cursor:pointer;transition:.15s}
+.settings-status:hover{border-color:#c7d2fe}
+.settings-status.warn{border-color:#fcd34d;background:#fffbeb}
+.settings-status-icon{font-size:18px;flex:none}
+.settings-status-text{flex:1;font-size:12.5px;font-weight:700;color:#374151;min-width:0}
+.settings-status-text b{color:#1e1b4b}
+.settings-status-arrow{color:#9ca3af;font-size:12px;font-weight:900;flex:none}
 </style>
 </head>
 <body>
-<a href="index.html" class="home-nav" title="Kembali ke Beranda Toolkit Guru AI">🏠 <span>Beranda</span></a>
+
+<div class="modal-overlay" id="settingsModal" style="display:none">
+  <div class="modal-card">
+    <div class="modal-head">
+      <div class="modal-title">⚙️ Pengaturan Gemini</div>
+      <button class="modal-close" id="closeSettingsBtn" type="button">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label class="field-label">API Key</label>
+        <div class="key-row">
+          <input class="field-input" id="apiKey" type="password" placeholder="AQ.Ab... (atau AIza... untuk key lama)" style="padding-right:42px"/>
+          <button class="key-toggle" id="toggleKeyBtn" type="button" title="Tampilkan/sembunyikan">👁️</button>
+        </div>
+        <div class="checkbox-row">
+          <input type="checkbox" id="rememberKey"/>
+          <label for="rememberKey">Ingat API key ini di browser saya (tersimpan lokal, tidak dikirim ke siapa pun selain Google)</label>
+        </div>
+        <div class="field-hint">Dapatkan gratis di <a class="api-link" href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Google AI Studio ↗</a>. Sejak pertengahan 2026 Google menerbitkan key baru berformat <code class="mono">AQ.Ab...</code> (dulu <code class="mono">AIza...</code>) — keduanya bisa dipakai di sini.</div>
+      </div>
+      <div class="field">
+        <label class="field-label">Model</label>
+        <select class="field-input" id="modelSelect">
+          <option value="gemini-3.5-flash-lite" selected>gemini-3.5-flash-lite — Cepat & hemat (disarankan)</option>
+          <option value="gemini-3.6-flash">gemini-3.6-flash — Kualitas terbaik, sedikit lebih lambat</option>
+          <option value="gemini-3.1-flash-lite">gemini-3.1-flash-lite — Alternatif jika model di atas gagal</option>
+          <option value="gemini-2.5-flash">gemini-2.5-flash — Model lama (mungkin tidak tersedia untuk API key baru)</option>
+          <option value="__custom__">✏️ Ketik nama model lain (manual)...</option>
+        </select>
+        <input class="field-input" id="modelCustomInput" type="text" placeholder="Ketik nama model, cth: gemini-3.7-flash" style="display:none;margin-top:8px"/>
+        <div class="field-hint">Google sering mengganti/menghentikan model lama untuk API key baru. Jika muncul error "model no longer available", coba ganti model di sini.</div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-primary" id="saveSettingsBtn" type="button">Simpan Pengaturan</button>
+    </div>
+  </div>
+</div>
+
+<header class="app-header">
+  <div class="header-inner">
+    <a href="index.html" class="header-brand" title="Kembali ke Beranda Toolkit Guru AI">
+      <div class="header-brand-mark">🤖</div>
+      <div class="header-brand-text">
+        <div class="header-brand-title">Generator Kuis Interaktif</div>
+        <div class="header-brand-sub">Didukung Google Gemini</div>
+      </div>
+    </a>
+    <div class="header-actions">
+      <a href="index.html" class="icon-btn" title="Kembali ke Beranda">🏠</a>
+      <button class="icon-btn" id="openSettingsBtn" type="button" title="Pengaturan Gemini">
+        ⚙️
+        <span class="icon-badge-dot" id="settingsBadge" style="display:none"></span>
+      </button>
+    </div>
+  </div>
+</header>
+
 <div class="wrap">
 
   <div class="hero">
@@ -265,39 +347,11 @@ code,.mono{font-family:'Fira Code',monospace}
     </div>
   </div>
 
-  <!-- CARD 5: API Key -->
-  <div class="card">
-    <div class="card-head">
-      <div class="card-num">5</div>
-      <div>
-        <div class="card-title">Gemini API Key</div>
-        <div class="card-desc">Dapatkan gratis di <a class="api-link" href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Google AI Studio ↗</a></div>
-      </div>
-    </div>
-    <div class="field">
-      <label class="field-label">API Key</label>
-      <div class="key-row">
-        <input class="field-input" id="apiKey" type="password" placeholder="AQ.Ab... (atau AIza... untuk key lama)" style="padding-right:42px"/>
-        <button class="key-toggle" id="toggleKeyBtn" type="button" title="Tampilkan/sembunyikan">👁️</button>
-      </div>
-      <div class="checkbox-row">
-        <input type="checkbox" id="rememberKey"/>
-        <label for="rememberKey">Ingat API key ini di browser saya (tersimpan lokal, tidak dikirim ke siapa pun selain Google)</label>
-      </div>
-      <div class="field-hint">Sejak pertengahan 2026 Google menerbitkan key baru berformat <code class="mono">AQ.Ab...</code> (dulu <code class="mono">AIza...</code>). Keduanya sama-sama bisa dipakai di sini — tinggal tempel apa pun yang diberikan Google AI Studio.</div>
-    </div>
-    <div class="field">
-      <label class="field-label">Model</label>
-      <select class="field-input" id="modelSelect">
-        <option value="gemini-3.5-flash-lite" selected>gemini-3.5-flash-lite — Cepat & hemat (disarankan)</option>
-        <option value="gemini-3.6-flash">gemini-3.6-flash — Kualitas terbaik, sedikit lebih lambat</option>
-        <option value="gemini-3.1-flash-lite">gemini-3.1-flash-lite — Alternatif jika model di atas gagal</option>
-        <option value="gemini-2.5-flash">gemini-2.5-flash — Model lama (mungkin tidak tersedia untuk API key baru)</option>
-        <option value="__custom__">✏️ Ketik nama model lain (manual)...</option>
-      </select>
-      <input class="field-input" id="modelCustomInput" type="text" placeholder="Ketik nama model, cth: gemini-3.7-flash" style="display:none;margin-top:8px"/>
-      <div class="field-hint">Google sering mengganti/menghentikan model lama untuk API key baru. Jika muncul error "model no longer available", coba ganti model di daftar ini.</div>
-    </div>
+  <!-- Ringkasan status Pengaturan Gemini (klik untuk buka) -->
+  <div class="settings-status warn" id="settingsStatus">
+    <span class="settings-status-icon" id="settingsStatusIcon">🔑</span>
+    <span class="settings-status-text" id="settingsStatusText">Klik untuk atur API Key & Model Gemini dulu sebelum generate</span>
+    <span class="settings-status-arrow">→</span>
   </div>
 
   <button class="btn-primary" id="generateBtn">✨ Buat Kuis Sekarang</button>
@@ -1092,6 +1146,35 @@ function getSelectedModel(){
   if(v === '__custom__') return $('modelCustomInput').value.trim() || 'gemini-3.5-flash-lite';
   return v;
 }
+
+// ---------- settings modal ----------
+function openSettingsModal(){ $('settingsModal').style.display = 'flex'; }
+function closeSettingsModal(){ $('settingsModal').style.display = 'none'; updateSettingsStatus(); }
+$('openSettingsBtn').addEventListener('click', openSettingsModal);
+$('settingsStatus').addEventListener('click', openSettingsModal);
+$('closeSettingsBtn').addEventListener('click', closeSettingsModal);
+$('saveSettingsBtn').addEventListener('click', closeSettingsModal);
+$('settingsModal').addEventListener('click', (e)=>{ if(e.target.id === 'settingsModal') closeSettingsModal(); });
+document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape' && $('settingsModal').style.display === 'flex') closeSettingsModal(); });
+
+function updateSettingsStatus(){
+  const hasKey = $('apiKey').value.trim().length > 0;
+  const modelLabel = getSelectedModel();
+  const box = $('settingsStatus');
+  const badge = $('settingsBadge');
+  if(hasKey){
+    box.classList.remove('warn');
+    $('settingsStatusIcon').textContent = '✅';
+    $('settingsStatusText').innerHTML = `API Key tersimpan &nbsp;·&nbsp; Model: <b>${escHtml(modelLabel)}</b>`;
+    badge.style.display = 'none';
+  }else{
+    box.classList.add('warn');
+    $('settingsStatusIcon').textContent = '🔑';
+    $('settingsStatusText').textContent = 'Klik untuk atur API Key & Model Gemini dulu sebelum generate';
+    badge.style.display = 'block';
+  }
+}
+updateSettingsStatus();
 
 // ---------- material preview toggle ----------
 $('togglePreview').addEventListener('click', ()=>{
