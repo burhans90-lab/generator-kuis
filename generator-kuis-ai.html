@@ -127,6 +127,17 @@ code,.mono{font-family:'Fira Code',monospace}
 .icon-btn{width:38px;height:38px;border-radius:11px;border:1.5px solid #e0e7ff;background:#fff;display:flex;align-items:center;justify-content:center;color:#4b5563;font-size:16px;position:relative;transition:.15s;text-decoration:none;flex:none}
 .icon-btn:hover{border-color:#c7d2fe;color:#4f46e5;transform:translateY(-1px);box-shadow:0 2px 10px rgba(37,99,235,.1)}
 .icon-badge-dot{position:absolute;top:-3px;right:-3px;width:9px;height:9px;border-radius:50%;background:#f59e0b;border:2px solid #fff}
+.icon-badge-dot.info{background:#4f46e5}
+
+.hist-item{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1.5px solid #e0e7ff;border-radius:12px;margin-bottom:8px;cursor:pointer;transition:.15s}
+.hist-item:hover{border-color:#c7d2fe;background:#f8faff}
+.hist-item:last-child{margin-bottom:0}
+.hist-text{flex:1;min-width:0}
+.hist-title{font-size:13px;font-weight:800;color:#1e1b4b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hist-meta{font-size:10.5px;color:#9ca3af;margin-top:2px}
+.hist-del{width:26px;height:26px;border-radius:50%;border:1.5px solid #fee2e2;background:#fff;color:#ef4444;font-size:11px;font-weight:900;flex:none}
+.hist-del:hover{background:#fef2f2}
+.hist-empty{text-align:center;padding:24px 10px;font-size:12.5px;color:#9ca3af;font-style:italic}
 
 .modal-overlay{position:fixed;inset:0;background:rgba(30,27,75,.45);backdrop-filter:blur(2px);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px}
 .modal-card{background:#fff;border-radius:20px;max-width:480px;width:100%;max-height:88vh;overflow-y:auto;box-shadow:0 20px 60px rgba(30,27,75,.3);animation:popIn .25s ease}
@@ -186,6 +197,19 @@ code,.mono{font-family:'Fira Code',monospace}
   </div>
 </div>
 
+<div class="modal-overlay" id="historyModal" style="display:none">
+  <div class="modal-card">
+    <div class="modal-head">
+      <div class="modal-title">📜 Riwayat Generate</div>
+      <button class="modal-close" id="closeHistoryBtn" type="button">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field-hint" style="margin-bottom:14px">Klik salah satu untuk memuat ulang hasilnya (tanpa perlu generate ulang ke AI).</div>
+      <div id="historyList"></div>
+    </div>
+  </div>
+</div>
+
 <header class="app-header">
   <div class="header-inner">
     <a href="index.html" class="header-brand" title="Kembali ke Beranda Toolkit Guru AI">
@@ -197,6 +221,10 @@ code,.mono{font-family:'Fira Code',monospace}
     </a>
     <div class="header-actions">
       <a href="index.html" class="icon-btn" title="Kembali ke Beranda">🏠</a>
+      <button class="icon-btn" id="openHistoryBtn" type="button" title="Riwayat Generate">
+        📜
+        <span class="icon-badge-dot info" id="historyBadge" style="display:none"></span>
+      </button>
       <button class="icon-btn" id="openSettingsBtn" type="button" title="Pengaturan Gemini">
         ⚙️
         <span class="icon-badge-dot" id="settingsBadge" style="display:none"></span>
@@ -1114,13 +1142,16 @@ let uploadedMaterialText = '';
 let uploadedFileName = '';
 
 // ---------- radio card UI ----------
-document.querySelectorAll('#matSourceRow .opt-radio').forEach(label=>{
-  label.addEventListener('click', ()=>{
-    document.querySelectorAll('#matSourceRow .opt-radio').forEach(l=>l.classList.remove('checked'));
-    label.classList.add('checked');
-    label.querySelector('input').checked = true;
-    $('uploadArea').style.display = label.dataset.val === 'upload' ? 'block' : 'none';
+function setMatSource(val){
+  document.querySelectorAll('#matSourceRow .opt-radio').forEach(l=>{
+    const on = l.dataset.val === val;
+    l.classList.toggle('checked', on);
+    l.querySelector('input').checked = on;
   });
+  $('uploadArea').style.display = val === 'upload' ? 'block' : 'none';
+}
+document.querySelectorAll('#matSourceRow .opt-radio').forEach(label=>{
+  label.addEventListener('click', ()=> setMatSource(label.dataset.val));
 });
 
 // ---------- API key show/hide ----------
@@ -1155,7 +1186,11 @@ $('settingsStatus').addEventListener('click', openSettingsModal);
 $('closeSettingsBtn').addEventListener('click', closeSettingsModal);
 $('saveSettingsBtn').addEventListener('click', closeSettingsModal);
 $('settingsModal').addEventListener('click', (e)=>{ if(e.target.id === 'settingsModal') closeSettingsModal(); });
-document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape' && $('settingsModal').style.display === 'flex') closeSettingsModal(); });
+document.addEventListener('keydown', (e)=>{
+  if(e.key !== 'Escape') return;
+  if($('settingsModal').style.display === 'flex') closeSettingsModal();
+  if($('historyModal').style.display === 'flex') closeHistoryModal();
+});
 
 function updateSettingsStatus(){
   const hasKey = $('apiKey').value.trim().length > 0;
@@ -1175,6 +1210,92 @@ function updateSettingsStatus(){
   }
 }
 updateSettingsStatus();
+
+// ---------- riwayat generate (history) ----------
+const HISTORY_KEY = 'gemini_quiz_gen_history';
+const HISTORY_MAX = 15;
+
+function loadHistoryList(){
+  try{ return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); }
+  catch(e){ return []; }
+}
+function persistHistoryList(list){
+  try{ localStorage.setItem(HISTORY_KEY, JSON.stringify(list)); }catch(e){ /* storage full/unavailable — ignore */ }
+}
+function updateHistoryBadge(){
+  const list = loadHistoryList();
+  $('historyBadge').style.display = list.length > 0 ? 'block' : 'none';
+}
+function saveToHistory({subject, className, quizData, cfg, formSnapshot}){
+  const list = loadHistoryList();
+  const entry = {
+    id: Date.now().toString(),
+    title: `${subject} — ${className}`,
+    timestamp: new Date().toLocaleString('id-ID'),
+    quizData, cfg, formSnapshot
+  };
+  const newList = [entry, ...list].slice(0, HISTORY_MAX);
+  persistHistoryList(newList);
+  updateHistoryBadge();
+}
+function renderHistoryModalList(){
+  const list = loadHistoryList();
+  const el = $('historyList');
+  if(list.length === 0){
+    el.innerHTML = `<div class="hist-empty">Belum ada riwayat generate.</div>`;
+    return;
+  }
+  el.innerHTML = list.map(h => `
+    <div class="hist-item" data-id="${h.id}">
+      <div class="hist-text">
+        <div class="hist-title">${escHtml(h.title)}</div>
+        <div class="hist-meta">${escHtml(h.timestamp)} · ${(h.quizData.mudah?.length||0)+(h.quizData.sedang?.length||0)+(h.quizData.sulit?.length||0)} soal</div>
+      </div>
+      <button class="hist-del" data-id="${h.id}" title="Hapus">✕</button>
+    </div>`).join('');
+  el.querySelectorAll('.hist-item').forEach(item=>{
+    item.addEventListener('click', ()=> loadHistoryEntry(item.dataset.id));
+  });
+  el.querySelectorAll('.hist-del').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{ e.stopPropagation(); deleteHistoryEntry(btn.dataset.id); });
+  });
+}
+function deleteHistoryEntry(id){
+  const list = loadHistoryList().filter(h=>h.id!==id);
+  persistHistoryList(list);
+  renderHistoryModalList();
+  updateHistoryBadge();
+}
+function loadHistoryEntry(id){
+  const entry = loadHistoryList().find(h=>h.id===id);
+  if(!entry) return;
+  const fs = entry.formSnapshot || {};
+  if(fs.teacherName!==undefined) $('teacherName').value = fs.teacherName;
+  if(fs.schoolName!==undefined) $('schoolName').value = fs.schoolName;
+  if(fs.subject!==undefined) $('subject').value = fs.subject;
+  if(fs.className!==undefined) $('className').value = fs.className;
+  if(fs.countMudah!==undefined) $('countMudah').value = fs.countMudah;
+  if(fs.countSedang!==undefined) $('countSedang').value = fs.countSedang;
+  if(fs.countSulit!==undefined) $('countSulit').value = fs.countSulit;
+  if(fs.customInstructions!==undefined) $('customInstructions').value = fs.customInstructions;
+  if(fs.examToken!==undefined) $('examToken').value = fs.examToken;
+  if(fs.practiceRatioPct!==undefined) $('practiceRatioPct').value = fs.practiceRatioPct;
+  if(fs.matSource) setMatSource(fs.matSource);
+
+  const finalHtml = buildFinalHtml({...entry.cfg, quizData: entry.quizData});
+  presentResult({subject: entry.cfg.subject, className: entry.cfg.className, quizData: entry.quizData, examToken: entry.cfg.examToken, practiceRatioPct: Math.round((entry.cfg.practiceRatio||0.75)*100), finalHtml});
+
+  closeHistoryModal();
+  $('statusCard').style.display = 'none';
+  $('resultCard').style.display = 'block';
+  $('resultCard').scrollIntoView({behavior:'smooth', block:'start'});
+}
+function openHistoryModal(){ renderHistoryModalList(); $('historyModal').style.display = 'flex'; }
+function closeHistoryModal(){ $('historyModal').style.display = 'none'; }
+$('openHistoryBtn').addEventListener('click', openHistoryModal);
+$('closeHistoryBtn').addEventListener('click', closeHistoryModal);
+$('historyModal').addEventListener('click', (e)=>{ if(e.target.id === 'historyModal') closeHistoryModal(); });
+updateHistoryBadge();
 
 // ---------- material preview toggle ----------
 $('togglePreview').addEventListener('click', ()=>{
@@ -1449,6 +1570,42 @@ function buildFinalHtml({teacherName, schoolName, subject, className, quizData, 
   return fillTemplate(tpl, map);
 }
 
+function presentResult({subject, className, quizData, examToken, practiceRatioPct, finalHtml}){
+  const levels = ['mudah','sedang','sulit'].filter(lv=>Array.isArray(quizData[lv]) && quizData[lv].length>0);
+  const total = levels.reduce((a,lv)=>a+quizData[lv].length,0);
+  $('resultDesc').textContent = `${subject} · ${className}`;
+  $('resultSummary').innerHTML = `
+    <div class="result-stat"><div class="result-stat-val">${total}</div><div class="result-stat-label">Total Soal Ujian</div></div>
+    <div class="result-stat"><div class="result-stat-val">${quizData.mudah?.length||0}</div><div class="result-stat-label">📝 Mudah</div></div>
+    <div class="result-stat"><div class="result-stat-val">${quizData.sedang?.length||0}</div><div class="result-stat-label">⚙️ Sedang</div></div>
+    <div class="result-stat"><div class="result-stat-val">${quizData.sulit?.length||0}</div><div class="result-stat-label">🚀 Sulit</div></div>`;
+  const oldHint = $('resultSummary').nextElementSibling;
+  if(oldHint && oldHint.classList.contains('field-hint')) oldHint.remove();
+  $('resultSummary').insertAdjacentHTML('afterend', `
+    <div class="field-hint" style="margin:-8px 0 14px">
+      📖 Mode Latihan otomatis memakai ~${practiceRatioPct}% soal per tingkat (dipilih acak).
+      ${examToken ? `🔒 Mode Ujian butuh kode akses: <strong style="color:#374151">${escHtml(examToken)}</strong> (beri tahu siswa saat ujian dimulai).` : '🔓 Mode Ujian tidak memakai kode akses (bebas dimasuki siapa saja).'}
+    </div>`);
+
+  const slug = subject.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'').slice(0,40) || 'kuis';
+  const fileName = `kuis-${slug}.html`;
+  $('previewLabel').textContent = fileName;
+  $('previewFrame').srcdoc = finalHtml;
+
+  $('downloadBtn').onclick = ()=>{
+    const blob = new Blob([finalHtml], {type:'text/html'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = fileName; a.click();
+    setTimeout(()=>URL.revokeObjectURL(url), 4000);
+  };
+  $('openTabBtn').onclick = ()=>{
+    const blob = new Blob([finalHtml], {type:'text/html'});
+    const url = URL.createObjectURL(blob);
+    window.open(url, '_blank');
+  };
+}
+
 // ---------- status stepper UI ----------
 const STEPS = [
   {key:'material', label:'Menyiapkan materi referensi'},
@@ -1526,37 +1683,12 @@ $('generateBtn').addEventListener('click', async ()=>{
     renderSteps(null, doneKeys, null);
 
     // show result
-    const levels = ['mudah','sedang','sulit'].filter(lv=>Array.isArray(quizData[lv]) && quizData[lv].length>0);
-    const total = levels.reduce((a,lv)=>a+quizData[lv].length,0);
-    $('resultDesc').textContent = `${subject} · ${className}`;
-    $('resultSummary').innerHTML = `
-      <div class="result-stat"><div class="result-stat-val">${total}</div><div class="result-stat-label">Total Soal Ujian</div></div>
-      <div class="result-stat"><div class="result-stat-val">${quizData.mudah?.length||0}</div><div class="result-stat-label">📝 Mudah</div></div>
-      <div class="result-stat"><div class="result-stat-val">${quizData.sedang?.length||0}</div><div class="result-stat-label">⚙️ Sedang</div></div>
-      <div class="result-stat"><div class="result-stat-val">${quizData.sulit?.length||0}</div><div class="result-stat-label">🚀 Sulit</div></div>`;
-    $('resultSummary').insertAdjacentHTML('afterend', `
-      <div class="field-hint" style="margin:-8px 0 14px">
-        📖 Mode Latihan otomatis memakai ~${practiceRatioPct}% soal per tingkat (dipilih acak).
-        ${examToken ? `🔒 Mode Ujian butuh kode akses: <strong style="color:#374151">${escHtml(examToken)}</strong> (beri tahu siswa saat ujian dimulai).` : '🔓 Mode Ujian tidak memakai kode akses (bebas dimasuki siapa saja).'}
-      </div>`);
-
-    const slug = subject.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'').slice(0,40) || 'kuis';
-    const fileName = `kuis-${slug}.html`;
-    $('previewLabel').textContent = fileName;
-    $('previewFrame').srcdoc = finalHtml;
-
-    $('downloadBtn').onclick = ()=>{
-      const blob = new Blob([finalHtml], {type:'text/html'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = fileName; a.click();
-      setTimeout(()=>URL.revokeObjectURL(url), 4000);
-    };
-    $('openTabBtn').onclick = ()=>{
-      const blob = new Blob([finalHtml], {type:'text/html'});
-      const url = URL.createObjectURL(blob);
-      window.open(url, '_blank');
-    };
+    presentResult({subject, className, quizData, examToken, practiceRatioPct, finalHtml});
+    saveToHistory({
+      subject, className, quizData,
+      cfg: {teacherName, schoolName, subject, className, examToken, practiceRatio},
+      formSnapshot: {teacherName, schoolName, subject, className, countMudah: counts.mudah, countSedang: counts.sedang, countSulit: counts.sulit, customInstructions, examToken, practiceRatioPct, matSource}
+    });
 
     $('resultCard').style.display = 'block';
     $('resultCard').scrollIntoView({behavior:'smooth', block:'start'});
