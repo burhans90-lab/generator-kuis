@@ -28,21 +28,6 @@ a{text-decoration:none;color:inherit}
 .tool-title{font-size:17px;font-weight:900;color:#1e1b4b;margin-bottom:4px}
 .tool-desc{font-size:12.5px;color:#6b7280;line-height:1.6;margin-bottom:12px}
 .tool-cta{font-size:12.5px;font-weight:800;color:#4f46e5;display:flex;align-items:center;gap:4px}
-
-.list-card{background:#fff;border:1.5px solid #e0e7ff;border-radius:16px;overflow:hidden;box-shadow:0 2px 16px rgba(37,99,235,.07)}
-.list-item{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid #f1f5f9;transition:background .15s}
-.list-item:last-child{border-bottom:none}
-.list-item:hover{background:#f8faff}
-.list-icon{font-size:20px;flex-shrink:0}
-.list-text{flex:1}
-.list-title{font-size:13.5px;font-weight:800;color:#1e1b4b}
-.list-sub{font-size:11px;color:#9ca3af;margin-top:1px}
-.list-arrow{color:#c7d2fe;font-weight:900}
-
-.empty-note{padding:18px;text-align:center;font-size:12.5px;color:#9ca3af;font-style:italic}
-
-.footer-note{text-align:center;font-size:11.5px;color:#9ca3af;margin-top:34px;line-height:1.7}
-.footer-note code{background:#eef2ff;color:#4f46e5;padding:1px 6px;border-radius:5px;font-size:11px}
 </style>
 </head>
 <body>
@@ -70,39 +55,6 @@ a{text-decoration:none;color:inherit}
     </a>
   </div>
 
-  <div class="section-title">📚 Kuis yang Sudah Dibuat</div>
-  <div class="list-card" id="quizList"></div>
-
-  <div class="footer-note">
-    Halaman ini murni HTML statis — untuk menambah kuis baru ke daftar di atas,<br/>
-    edit larik <code>QUIZZES</code> di dalam file <code>index.html</code> ini lalu commit ulang.
-  </div>
-
 </div>
-
-<script>
-/* =========================================================================
-   Tambahkan kuis yang sudah kamu generate & upload ke repo ini di sini.
-   Cukup tambah satu baris per kuis — file harus sudah ada di repo yang sama.
-   ========================================================================= */
-const QUIZZES = [
-  // { title: "Wawasan Dunia Kerja PPLG", sub: "X PPLG", file: "kuis-wawasan-pplg.html" },
-];
-
-const listEl = document.getElementById('quizList');
-if(QUIZZES.length === 0){
-  listEl.innerHTML = `<div class="empty-note">Belum ada kuis di daftar ini. Tambahkan lewat larik QUIZZES di kode halaman ini.</div>`;
-}else{
-  listEl.innerHTML = QUIZZES.map(q => `
-    <a class="list-item" href="${q.file}">
-      <span class="list-icon">📝</span>
-      <div class="list-text">
-        <div class="list-title">${q.title}</div>
-        ${q.sub ? `<div class="list-sub">${q.sub}</div>` : ''}
-      </div>
-      <span class="list-arrow">→</span>
-    </a>`).join('');
-}
-</script>
 </body>
 </html>
