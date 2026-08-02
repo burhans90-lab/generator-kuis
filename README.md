@@ -1,2 +1,2 @@
 # generator-kuis
-aplikasi untuk men-generate kuis single html
+aplikasi untuk men-generate rpp dan kuis single html
