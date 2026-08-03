@@ -155,6 +155,76 @@ code,.mono{font-family:'Fira Code',monospace}
 .settings-status-text{flex:1;font-size:12.5px;font-weight:700;color:#374151;min-width:0}
 .settings-status-text b{color:#1e1b4b}
 .settings-status-arrow{color:#9ca3af;font-size:12px;font-weight:900;flex:none}
+
+.autosave-bar{display:flex;align-items:center;justify-content:flex-end;gap:9px;margin:-6px 2px 14px;font-size:11.5px;color:#9ca3af;flex-wrap:wrap}
+.autosave-bar .dot{width:7px;height:7px;border-radius:50%;background:#22c55e;flex:none}
+.autosave-bar button{background:none;border:none;color:#4f46e5;font-weight:700;font-size:11.5px;text-decoration:underline;padding:0;cursor:pointer}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1e1b4b;color:#fff;padding:11px 20px;border-radius:12px;font-size:13px;font-weight:700;z-index:200;box-shadow:0 10px 30px rgba(0,0,0,.25);max-width:90vw;text-align:center;animation:popIn .2s ease}
+
+.footer-credit{text-align:center;font-size:11px;color:#9ca3af;margin-top:6px}
+.footer-credit .heart{background:linear-gradient(135deg,#7c3aed,#4f46e5);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+
+/* ---------- Mode Gelap ---------- */
+[data-theme="dark"] body{background:linear-gradient(160deg,#0f172a 0%,#131c31 55%,#0f172a 100%);color:#e2e8f0}
+[data-theme="dark"] .hero-sub{color:#94a3b8}
+[data-theme="dark"] .card{background:#1e293b;border-color:#334155;box-shadow:0 2px 16px rgba(0,0,0,.25)}
+[data-theme="dark"] .card-title{color:#f1f5f9}
+[data-theme="dark"] .card-desc{color:#94a3b8}
+[data-theme="dark"] .field-label{color:#cbd5e1}
+[data-theme="dark"] .field-label .opt{color:#64748b}
+[data-theme="dark"] .field-input{background:#0f172a;border-color:#334155;color:#e2e8f0}
+[data-theme="dark"] .field-input:focus{border-color:#818cf8}
+[data-theme="dark"] .field-hint{color:#64748b}
+[data-theme="dark"] .field-hint code.mono{background:#334155;color:#a5b4fc}
+[data-theme="dark"] .opt-radio{border-color:#334155}
+[data-theme="dark"] .opt-radio:hover{border-color:#475569;background:#0f172a}
+[data-theme="dark"] .opt-radio.checked{border-color:#818cf8;background:#1e2440}
+[data-theme="dark"] .opt-radio-label{color:#e2e8f0}
+[data-theme="dark"] .opt-radio-desc{color:#94a3b8}
+[data-theme="dark"] .dropzone{background:#0f172a;border-color:#334155}
+[data-theme="dark"] .dropzone:hover,[data-theme="dark"] .dropzone.drag{border-color:#818cf8;background:#1e2440}
+[data-theme="dark"] .dropzone-text{color:#cbd5e1}
+[data-theme="dark"] .material-preview{background:#0f172a;border-color:#334155;color:#94a3b8}
+[data-theme="dark"] .btn-secondary{background:#1e293b;border-color:#334155;color:#c7d2fe}
+[data-theme="dark"] .step-item{background:#0f172a;border-color:#1e293b}
+[data-theme="dark"] .step-item.active{background:#1e2440;border-color:#4338ca}
+[data-theme="dark"] .step-item.done{background:#0f2e1e;border-color:#166534}
+[data-theme="dark"] .step-item.error{background:#2e1015;border-color:#7f1d1d}
+[data-theme="dark"] .step-text{color:#cbd5e1}
+[data-theme="dark"] .error-box{background:#2e1015;border-color:#7f1d1d}
+[data-theme="dark"] .error-title,[data-theme="dark"] .error-detail{color:#fca5a5}
+[data-theme="dark"] .result-stat{background:#0f172a;border-color:#334155}
+[data-theme="dark"] .result-stat-val{color:#f1f5f9}
+[data-theme="dark"] .preview-frame-wrap{border-color:#334155}
+[data-theme="dark"] .app-header{background:rgba(15,23,42,.85);border-color:#1e293b}
+[data-theme="dark"] .header-brand-title{color:#f1f5f9}
+[data-theme="dark"] .header-brand-sub{color:#64748b}
+[data-theme="dark"] .icon-btn{background:#1e293b;border-color:#334155;color:#94a3b8}
+[data-theme="dark"] .icon-btn:hover{border-color:#475569;color:#a5b4fc}
+[data-theme="dark"] .icon-badge-dot{border-color:#0f172a}
+[data-theme="dark"] .modal-card{background:#1e293b;box-shadow:0 20px 60px rgba(0,0,0,.45)}
+[data-theme="dark"] .modal-head{background:#1e293b;border-color:#334155}
+[data-theme="dark"] .modal-title{color:#f1f5f9}
+[data-theme="dark"] .modal-close{background:#334155;color:#94a3b8}
+[data-theme="dark"] .modal-close:hover{background:#475569}
+[data-theme="dark"] .settings-status{background:#1e293b;border-color:#334155}
+[data-theme="dark"] .settings-status:hover{border-color:#475569}
+[data-theme="dark"] .settings-status.warn{border-color:#78350f;background:#2e2110}
+[data-theme="dark"] .settings-status-text{color:#cbd5e1}
+[data-theme="dark"] .settings-status-text b{color:#f1f5f9}
+[data-theme="dark"] .hist-item{border-color:#334155}
+[data-theme="dark"] .hist-item:hover{border-color:#475569;background:#0f172a}
+[data-theme="dark"] .hist-title{color:#e2e8f0}
+[data-theme="dark"] .hist-meta{color:#64748b}
+[data-theme="dark"] .hist-del{background:#1e293b;border-color:#5c1c30;color:#f87171}
+[data-theme="dark"] .hist-del:hover{background:#2e1015}
+[data-theme="dark"] .hist-empty{color:#64748b}
+[data-theme="dark"] .autosave-bar{color:#64748b}
+[data-theme="dark"] .footer-note,[data-theme="dark"] .footer-credit{color:#64748b}
+[data-theme="dark"] .checkbox-row label{color:#94a3b8}
+[data-theme="dark"] .key-toggle{color:#94a3b8}
+[data-theme="dark"] .api-link{color:#a5b4fc}
 </style>
 </head>
 <body>
@@ -229,6 +299,7 @@ code,.mono{font-family:'Fira Code',monospace}
         ⚙️
         <span class="icon-badge-dot" id="settingsBadge" style="display:none"></span>
       </button>
+      <button class="icon-btn" id="themeToggleBtn" type="button" title="Mode gelap">🌙</button>
     </div>
   </div>
 </header>
@@ -240,6 +311,12 @@ code,.mono{font-family:'Fira Code',monospace}
     <span class="hero-title">Generator Kuis Interaktif AI</span>
     <div class="hero-sub">Buat kuis HTML siap pakai dari materi ajar apa pun, dalam hitungan menit</div>
     <div class="hero-badge">⚡ Didukung Google Gemini</div>
+  </div>
+
+  <div class="autosave-bar" id="autosaveBar">
+    <span class="dot"></span>
+    <span id="autosaveText">Draft akan tersimpan otomatis</span>
+    <button id="clearDraftBtn" type="button">Kosongkan draft</button>
   </div>
 
   <!-- CARD 1: Informasi Kuis -->
@@ -427,8 +504,12 @@ code,.mono{font-family:'Fira Code',monospace}
     API key kamu hanya dipakai langsung dari browser ini ke server Google — tidak pernah dikirim atau disimpan di server lain.<br/>
     File kuis hasil generate 100% berdiri sendiri (tidak butuh internet/API key lagi setelah diunduh).
   </div>
+  <div class="footer-credit">Made with <span class="heart">♥</span> by Burhanudin, S.Kom - Skanetra Jawara</div>
 
 </div>
+
+<div id="toastContainer"></div>
+
 <script type="text/template" id="quiz-template">
 
 <!DOCTYPE html>
@@ -1136,6 +1217,18 @@ function fillTemplate(tpl, map){
   for(const [token, val] of Object.entries(map)) out = out.split(token).join(val);
   return out;
 }
+function debounce(fn, delay){
+  let t = null;
+  return (...args)=>{ if(t) clearTimeout(t); t = setTimeout(()=>fn(...args), delay); };
+}
+function showToast(message, duration=2400){
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.textContent = message;
+  $('toastContainer').innerHTML = '';
+  $('toastContainer').appendChild(el);
+  setTimeout(()=>{ if(el.parentNode) el.parentNode.removeChild(el); }, duration);
+}
 
 // ---------- state ----------
 let uploadedMaterialText = '';
@@ -1165,6 +1258,25 @@ $('toggleKeyBtn').addEventListener('click', ()=>{
     if(saved){ $('apiKey').value = saved; $('rememberKey').checked = true; }
   }catch(e){ /* localStorage unavailable (private browsing / file:// restrictions) — ignore */ }
 })();
+
+// ---------- mode gelap ----------
+const THEME_KEY = 'gemini_quiz_gen_theme';
+function applyTheme(theme){
+  document.documentElement.setAttribute('data-theme', theme);
+  $('themeToggleBtn').textContent = theme === 'dark' ? '☀️' : '🌙';
+  $('themeToggleBtn').title = theme === 'dark' ? 'Mode terang' : 'Mode gelap';
+}
+(function initTheme(){
+  let saved = 'light';
+  try{ saved = localStorage.getItem(THEME_KEY) || 'light'; }catch(e){}
+  applyTheme(saved);
+})();
+$('themeToggleBtn').addEventListener('click', ()=>{
+  const current = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+  const next = current === 'dark' ? 'light' : 'dark';
+  applyTheme(next);
+  try{ localStorage.setItem(THEME_KEY, next); }catch(e){ /* localStorage unavailable — theme still applies this session */ }
+});
 
 // ---------- model select ----------
 $('modelSelect').addEventListener('change', ()=>{
@@ -1296,6 +1408,55 @@ $('openHistoryBtn').addEventListener('click', openHistoryModal);
 $('closeHistoryBtn').addEventListener('click', closeHistoryModal);
 $('historyModal').addEventListener('click', (e)=>{ if(e.target.id === 'historyModal') closeHistoryModal(); });
 updateHistoryBadge();
+
+// ---------- draft tersimpan otomatis ----------
+const DRAFT_KEY = 'gemini_quiz_gen_draft';
+const DRAFT_FIELD_IDS = ['teacherName','schoolName','subject','className','countMudah','countSedang','countSulit','customInstructions','examToken','practiceRatioPct'];
+
+function collectDraft(){
+  const draft = {};
+  DRAFT_FIELD_IDS.forEach(id => { draft[id] = $(id).value; });
+  const checkedRadio = document.querySelector('input[name="matSource"]:checked');
+  draft.matSource = checkedRadio ? checkedRadio.value : 'upload';
+  draft.savedAt = new Date().toISOString();
+  return draft;
+}
+function persistDraft(){
+  try{
+    localStorage.setItem(DRAFT_KEY, JSON.stringify(collectDraft()));
+    const t = new Date();
+    $('autosaveText').textContent = `Draft tersimpan otomatis · ${t.toLocaleTimeString('id-ID')}`;
+  }catch(e){ /* storage full/unavailable — autosave silently skipped */ }
+}
+const autosaveDraft = debounce(persistDraft, 700);
+
+function restoreDraft(){
+  let raw = null;
+  try{ raw = localStorage.getItem(DRAFT_KEY); }catch(e){ return; }
+  if(!raw) return;
+  let draft;
+  try{ draft = JSON.parse(raw); }catch(e){ return; }
+  DRAFT_FIELD_IDS.forEach(id => { if(draft[id] !== undefined) $(id).value = draft[id]; });
+  if(draft.matSource) setMatSource(draft.matSource);
+  showToast('Draft sebelumnya berhasil dipulihkan');
+}
+function clearDraft(){
+  try{ localStorage.removeItem(DRAFT_KEY); }catch(e){}
+  DRAFT_FIELD_IDS.forEach(id => { $(id).value = ''; });
+  $('countMudah').value = '5'; $('countSedang').value = '5'; $('countSulit').value = '5';
+  $('practiceRatioPct').value = '75';
+  setMatSource('upload');
+  $('autosaveText').textContent = 'Draft akan tersimpan otomatis';
+  showToast('Draft dikosongkan');
+}
+$('clearDraftBtn').addEventListener('click', clearDraft);
+DRAFT_FIELD_IDS.forEach(id => {
+  $(id).addEventListener('input', autosaveDraft);
+});
+document.querySelectorAll('#matSourceRow .opt-radio').forEach(label=>{
+  label.addEventListener('click', autosaveDraft);
+});
+restoreDraft();
 
 // ---------- material preview toggle ----------
 $('togglePreview').addEventListener('click', ()=>{
